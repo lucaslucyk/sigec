@@ -1,0 +1,141 @@
+{% extends "admin/change_list.html" %}
+{% load staticfiles %}
+{% block extrahead %}
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/base.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.min.js"></script>
+    <script type="text/javascript" src="/static/admin/js/vendor/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/static/admin/js/jquery.init.js"></script>
+    <script type="text/javascript" src="/static/admin/js/core.js"></script>
+    <script type="text/javascript" src="/static/admin/js/admin/RelatedObjectLookups.js"></script>
+    <script type="text/javascript" src="/static/admin/js/actions.js"></script>
+    <script type="text/javascript" src="/static/admin/js/urlify.js"></script>
+    <script type="text/javascript" src="/static/admin/js/prepopulate.js"></script>
+    <script type="text/javascript" src="/static/admin/js/vendor/xregexp/xregexp.js"></script>
+    <script>
+        var randomColorGenerator = function () {
+            return '#' + (Math.random().toString(16) + '0000000').slice(2, 8);
+        };
+
+        var cantItems = function(valores){
+            
+            var current = null;
+            var cnt = 0;
+            var tmp = {};
+
+            for (var i = 0; i < valores.length; i++) {
+                if (valores[i] != current) {
+                    if (cnt > 0) {
+                        tmp[current] = cnt;
+                    }
+                    current = valores[i];
+                    cnt = 1;
+                } else {
+                    cnt++;
+                }
+            }
+            if (cnt > 0) {
+                tmp[current] = cnt;
+            }
+
+            return tmp;
+        };
+
+        var options = {
+            responsive: true,
+            maintainAspectRatio: true,
+            legend: {
+                position: 'left'
+            },
+            title: {
+                display: true
+            },
+            animation: {
+                animateScale: true,
+                animateRotate: true
+            }
+        };
+        window.onload = function () {
+
+            document.getElementById("content").firstElementChild.style.display = "none";
+
+            var ctx = document.getElementById("moendas-chart");
+            var monedas = [];
+            var facturados = [];
+            //var clientes = [];
+
+            {% for object in cl.result_list %} 
+                monedas.push('{{ object.moneda }}');
+                facturados.push('{{ object.facturado }}');
+                //clientes.push('{{ object.cliente }}');
+            {% endfor %}
+            //orden alfabetico
+            monedas.sort();
+            facturados.sort();
+            //clientes.sort();
+            
+            var dicMonedas = cantItems(monedas);
+
+            var colors = []
+            Object.keys(dicMonedas).forEach(function(element){
+                colors.push(randomColorGenerator());
+            });
+
+            //color and graph for monedas
+            var lineChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(dicMonedas),
+                    datasets: [{
+                        data: Object.values(dicMonedas),
+                        backgroundColor: colors
+                    }]
+                },
+                options: options
+            });
+
+            ctx = document.getElementById("facturados-chart");
+            //Graph for facturados
+            var dictFact = cantItems(facturados);
+            colors = []
+            Object.keys(dictFact).forEach(function(element){
+                colors.push(randomColorGenerator());
+            });
+
+            var lineChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(dictFact),
+                    datasets: [{
+                        data: Object.values(dictFact),
+                        backgroundColor: colors
+                    }]
+                },
+                options: options
+            });
+
+        };
+    </script>
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-sm-3 text-center">
+            <canvas id="clientes-chart" style="width: 100px !important;"></canvas>
+        </div>
+
+        <div class="col-sm-3 text-center">
+            <h4>Moneda</h4>
+            <canvas id="moendas-chart" style="width: 100px !important;"></canvas>
+        </div>
+        <div class="col-sm-3 text-center">
+            <h4>Facturado</h4>
+            <canvas id="facturados-chart" style="width: 100px !important;"></canvas>
+        </div>
+        
+        <div class="col-sm-3 text-center">
+            <canvas id="clientes-chart" style="width: 100px !important;"></canvas>
+        </div>
+    </div>
+    {{ block.super }}
+{% endblock %}
