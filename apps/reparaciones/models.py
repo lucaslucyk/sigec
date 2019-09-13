@@ -86,7 +86,7 @@ class LineaPresupuesto(models.Model):
 
     @mark_safe
     def presup_link(self):
-        link = reverse("admin:presup_presupuesto_change", args=[self.presupuesto.id]) #model name has to be lowercase
+        link = reverse("admin:reparaciones_presupuesto_change", args=[self.presupuesto.id]) #model name has to be lowercase
         return mark_safe('<a href="{}">{}</a>'.format(link, self.presupuesto.asunto))
     presup_link.allow_tags = True
     presup_link.short_description = "Presupuesto"

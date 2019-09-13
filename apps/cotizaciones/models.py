@@ -10,7 +10,7 @@ class Grupo(models.Model):
     imagen = models.ImageField("Imagen", null=True, blank=True, upload_to='imgs_grupo/', help_text="Para usarla en el producto si no tiene imagen.")
 
     def __str__(self):
-        return "{}".format(self.nombre)
+        return f'{self.nombre}'
 
     class Meta:
         verbose_name = "Grupo"
@@ -32,9 +32,9 @@ class Producto(models.Model):
     @mark_safe
     def img_display(self):
         if self.imagen:
-            return mark_safe('<img src="{}" alt="Imagen {}" height="42" width="42" />'.format(self.imagen.url, self.codigo))
+            return mark_safe(f'<img src="{self.imagen.url}" alt="Imagen {self.codigo}" height="42" width="42" />')
         elif self.grupo.imagen:
-            return mark_safe('<img src="{}" alt="Imagen {}" height="42" width="42" />'.format(self.grupo.imagen.url, self.grupo.nombre))
+            return mark_safe(f'<img src="{self.grupo.imagen.url}" alt="Imagen {self.grupo.nombre}" height="42" width="42" />')
         else:
             return mark_safe('<a href="''"></a>')
     img_display.short_description = "Imagen"
@@ -79,18 +79,18 @@ class Oferta(models.Model):
     @mark_safe
     def fileLink(self):
         if self.oc_autorizacion:
-            return mark_safe('<a href="{}" target="_blank">Enlace</a>'.format(self.oc_autorizacion.url))
+            return mark_safe(f'<a href="{self.oc_autorizacion.url}" target="_blank">Enlace</a>')
         else:
             return mark_safe('<a href="''"></a>')
     fileLink.allow_tags = True
     fileLink.short_description = "Link OC-Aprob"
 
     def user_names(self):
-            return '{} {}'.format(self.usuario.first_name, self.usuario.last_name)
+            return f'{self.usuario.first_name} {self.usuario.last_name}'
     user_names.short_description = "Usuario"
 
     def __str__(self):
-        return "{} | {}".format(self.cliente, self.asunto)
+        return f'{self.cliente} | {self.asunto}'
 
     class Meta:
         verbose_name = "Oferta"
@@ -100,12 +100,12 @@ class LineaOferta(models.Model):
     oferta = models.ForeignKey(Oferta, null=True, blank=False, on_delete=models.CASCADE)
     producto = models.ForeignKey(Producto, null=False, blank=False, on_delete=models.CASCADE)
     cantidad = models.IntegerField(default=1)
-    costo_custom = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+    costo_custom = models.DecimalField(default=0, max_digits=10, decimal_places=2, help_text='')
 
     @mark_safe
     def link_oferta(self):
-        link = reverse("admin:ofertas_oferta_change", args=[self.oferta.id]) #model name has to be lowercase
-        return mark_safe('<a href="{}">{}</a>'.format(link, self.oferta.usuario))
+        link = reverse("admin:cotizaciones_oferta_change", args=[self.oferta.id]) #model name has to be lowercase
+        return mark_safe(f'<a href="{link}">{self.oferta.asunto}</a>')
     link_oferta.allow_tags = True
     link_oferta.short_description = "Presupuesto"
 

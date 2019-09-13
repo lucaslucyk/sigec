@@ -6,6 +6,7 @@ from django.conf import settings
 from apps.data.models import Contrato, Cliente, Comercial
 from apps.data.modules.constantes import FORMATOS, CONDIC_PRESUP
 from apps.reparaciones.models import LineaPresupuesto
+from apps.cotizaciones.models import LineaOferta
 #import openpyxl
 
 ##customs process
@@ -91,13 +92,13 @@ def imp_cabeceras(book, sheet, obj, headerFrom=""):
 		"Para": [2,2, book.add_format(FORMATOS.get("headerKeys"))],
 		obj.cliente.nombre: [2,3],
 
-		"Presupuesto N°:": [4,2, book.add_format(FORMATOS.get("headerKeys"))],
+		"Presupuesto N°:" if "presupuesto" in f'{obj._meta}' else "Oferta N°": [4,2, book.add_format(FORMATOS.get("headerKeys"))],
 		obj.id: [4,3, book.add_format(FORMATOS.get("izquierda"))],
 
 		"Fecha": [6,2, book.add_format(FORMATOS.get("headerKeys"))],
 		obj.fecha: [6,3,book.add_format(FORMATOS.get("fechaIzq"))],
 
-		"De: {}".format(headerFrom): [6, 9, book.add_format(FORMATOS.get("bajoImg"))],
+		f'De: {headerFrom}': [6, 9, book.add_format(FORMATOS.get("bajoImg"))],
 	}
 	#Imprime las cabeceras
 	row = 0
@@ -107,7 +108,7 @@ def imp_cabeceras(book, sheet, obj, headerFrom=""):
 
 	################# LOGO #################
 	#Insertando logo..
-	rutaImg = "{}\\templates\\excel\\logo_spec_170_110.png".format(settings.BASE_DIR)
+	rutaImg = f'{settings.BASE_DIR}\\templates\\excel\\logo_spec_170_110.png'
 	sheet.insert_image('G2', rutaImg, {'x_scale': 0.84, 'y_scale': 0.84, "x_offset": 6})
 	################# FIN LOGO #################
 
@@ -145,19 +146,22 @@ def imp_linea_vacia(book, sheet, row, col, final=False, condiciones=False):
 	for c in range(len(formatosItems)):
 		sheet.write(row, c+col, "", formatosItems[c])
 
-def imp_linea_total(book, sheet, row, col, moneda, initialRow, lineas, final=False, grupo=""):
+def imp_linea_total(book, sheet, row, col, moneda, initialRow, final=False, grupo="", monto=0):
 	'''
 		Imprime una línea de total con los formatos correspondientes
 	'''
 	sheet.write(row, col, "", book.add_format(FORMATOS.get("item_BI")))
 	sheet.write(row, col+1, "", book.add_format(FORMATOS.get("item_BI")))
-	sheet.write(row, col+2, "_____ TOTAL OFERTA {}_____".format(grupo.upper()), book.add_format(dict(
+	sheet.write(row, col+2, f'_____ TOTAL {"OFERTA" if not grupo else ""} {grupo.upper()}_____', book.add_format(dict(
 																						**FORMATOS.get("item_BI"),
 																						**FORMATOS.get("negrita"),
 																						)))
 	sheet.write(row, col+3, "", book.add_format(FORMATOS.get("item_BI")))
 	sheet.write(row, col+5, moneda, book.add_format(FORMATOS.get("item_BI")))
-	sheet.write_formula(row, col+6, "SUM(I{}:I{})".format(initialRow+1, initialRow+lineas), book.add_format(FORMATOS.get("item_SB")))
+	if monto:
+		sheet.write(row, col+6, monto, book.add_format(FORMATOS.get("item_SB")))
+	else:
+		sheet.write_formula(row, col+6, f'SUM(I{initialRow+1}:I{row})', book.add_format(FORMATOS.get("item_SB")))
 	sheet.write(row, col+7, "+ IVA", book.add_format(FORMATOS.get("item_BD")))
 
 def imp_condiciones(book, sheet, row, col, tipo="presupuesto"):
@@ -202,7 +206,7 @@ def crea_excel_presupuesto(queryset):
 		_fileName = "P{}_{}_{}.xlsx".format(obj.id, re.sub(' ', '', obj.cliente.nombre.title()), re.sub(' ', '', obj.asunto.title()))
 
 		response = HttpResponse(content_type='application/application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', charset='iso-8859-1')
-		response['Content-Disposition'] = 'attachment; filename={}'.format(_fileName)
+		response['Content-Disposition'] = f'attachment; filename={_fileName}'
 
 		book = Workbook(response)
 		sheet = book.add_worksheet('Grupo SPEC')
@@ -258,7 +262,7 @@ def crea_excel_presupuesto(queryset):
 			sheet.write(row, col+3, obj.moneda.codigo, book.add_format(FORMATOS.get("item_BI")))
 			sheet.write(row, col+4, linea.costo_custom if linea.costo_custom else linea.repuesto.costo * obj.tasa_cambio, book.add_format(FORMATOS.get("item_SB")))
 			sheet.write(row, col+5, obj.moneda.codigo, book.add_format(FORMATOS.get("item_BI")))
-			sheet.write_formula(row, col+6, "D{}*G{}".format(row+1, row+1), book.add_format(FORMATOS.get("item_SB")))
+			sheet.write_formula(row, col+6, f'D{row+1}*G{row+1}', book.add_format(FORMATOS.get("item_SB")))
 			sheet.write(row, col+7,"+ IVA", book.add_format(FORMATOS.get("item_BD")))
 
 			row += 1
@@ -269,7 +273,7 @@ def crea_excel_presupuesto(queryset):
 	
 	################# LINEA TOTAL #################
 	row += 1
-	imp_linea_total(book, sheet, row, col, obj.moneda.codigo, initialRow, len(lineas))
+	imp_linea_total(book, sheet, row, col, obj.moneda.codigo, initialRow)
 	
 	################# LINEA FINAL #################
 	row += 1
@@ -279,6 +283,115 @@ def crea_excel_presupuesto(queryset):
 	row += 2
 	col = 2
 	imp_condiciones(book, sheet, row, col, tipo="presupuesto")
+
+	book.close()
+	return response
+
+def crea_excel_oferta(queryset):
+	'''
+		Crea excel de una oferta. Se llama desde la acción "Crea Excel" de ofertas_list 
+	'''
+
+	#queryset = queryset[0]
+	for obj in queryset[:1]:
+		
+		_fileName = "OFE{}_v4_{}.xlsx".format(obj.id, re.sub(' ', '', obj.cliente.nombre.title()))
+
+		response = HttpResponse(content_type='application/application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', charset='iso-8859-1')
+		response['Content-Disposition'] = f'attachment; filename={_fileName}'
+
+		book = Workbook(response)
+		sheet = book.add_worksheet('Grupo SPEC')
+
+		################# ANCHO Y ALTO #################
+		format_filas_columnas(sheet)
+
+		################# CABECERAS #################
+		#row = 0
+		row = imp_cabeceras(book, sheet, obj, obj.user_names())
+
+	row += 2
+	col = 2
+
+	################# ASUNTO #################
+	sheet.merge_range(row, col, row, col+7, obj.asunto.title(), book.add_format(FORMATOS.get("headerGrupos")) )
+	
+	row += 2
+	col = 2
+
+	################# TITULOS COLUMNAS VACIA #################
+	#titulos de grupos
+	#valor y columnas que ocupa
+	var_columnas = (("CÓDIGO",1), ("CANTIDAD",1), ("DESCRIPCIÓN",1), ("PRECIO UNITARIO",2), ("TOTAL",3),)
+
+	for var, posic in var_columnas:
+		if posic == 1:
+			#sheet.write(row, col, var, book.add_format(dict(**FORMATOS.get("center"), **FORMATOS.get("medio"))))
+			sheet.write(row, col, var, book.add_format(FORMATOS.get("headerGrupos")))
+		else:
+			#sheet.merge_range(row, col, row, col+posic-1, var, book.add_format(dict(**FORMATOS.get("center"), **FORMATOS.get("wrap"), **FORMATOS.get("medio"))))
+			sheet.merge_range(row, col, row, col+posic-1, var, book.add_format(FORMATOS.get("headerGrupos")))
+
+		col += posic
+	################# FIN TITULOS COLUMNAS VACIA #################
+
+	################# LINEA VACIA #################
+	col = 2
+	row += 1
+	imp_linea_vacia(book, sheet, row, col)
+
+	################# ITEMS #################
+	row += 1
+	lineas = LineaOferta.objects.filter(oferta=obj.id).order_by('producto__categoria__nombre')
+	initialRow = row
+	
+	parcial = row
+	categAnt = ""
+	#categAct = ""
+	#imprimiendo valores...
+	for obj in queryset:
+		for linea in lineas:
+			categAnt = linea.producto.categoria.nombre if not categAnt else categAnt
+			categAct = linea.producto.categoria.nombre
+
+			if categAnt is not categAct:
+				imp_linea_total(book, sheet, row, col, obj.moneda.codigo, parcial, final=False, grupo=categAnt)
+				row += 1
+				################# LINEA VACIA #################
+				imp_linea_vacia(book, sheet, row, col)
+				row += 1
+				categAnt = ""
+				parcial = row
+
+			sheet.write(row, col, linea.producto.codigo, book.add_format(FORMATOS.get("item_BI")))
+			sheet.write(row, col+1, linea.cantidad, book.add_format(FORMATOS.get("item_BI")))
+			sheet.write(row, col+2, linea.producto.descripcion, book.add_format(FORMATOS.get("item_BI")))    #descripcion
+			sheet.write(row, col+3, obj.moneda.codigo, book.add_format(FORMATOS.get("item_BI")))
+			sheet.write(row, col+4, linea.costo_custom if linea.costo_custom else linea.producto.costo * obj.tasa_cambio, book.add_format(FORMATOS.get("item_SB")))
+			sheet.write(row, col+5, obj.moneda.codigo, book.add_format(FORMATOS.get("item_BI")))
+			sheet.write_formula(row, col+6, f'D{row+1}*G{row+1}', book.add_format(FORMATOS.get("item_SB")))
+			sheet.write(row, col+7,"+ IVA", book.add_format(FORMATOS.get("item_BD")))
+			
+			row +=1
+			
+	################# FIN ITEMS #################
+	imp_linea_total(book, sheet, row, col, obj.moneda.codigo, parcial, final=False, grupo=categAnt)
+	row += 1
+	################# LINEA VACIA #################
+	imp_linea_vacia(book, sheet, row, col)
+	
+	################# LINEA TOTAL #################
+	row += 1
+	imp_linea_total(book, sheet, row, col, obj.moneda.codigo, initialRow, monto=obj.costo_total())
+	
+	################# LINEA FINAL #################
+	row += 1
+	imp_linea_vacia(book, sheet, row, col, final=True)
+
+	################# CONDICIONES COMERCIALES #################
+	row += 2
+	col = 2
+	imp_condiciones(book, sheet, row, col, tipo="oferta")
 
 	book.close()
 	return response

@@ -1,5 +1,6 @@
 from django.contrib import admin
 from apps.cotizaciones.models import Grupo, Producto, Oferta, LineaOferta
+from apps.data.modules.functions import crea_excel_oferta
 
 class GrupoAdmin(admin.ModelAdmin):
     list_display = ("nombre",)
@@ -40,13 +41,38 @@ class OfertaAdmin(admin.ModelAdmin):
     ordering = ("fecha",)
     list_per_page = 50
 
-    #actions = ["export_as_csv", "generar_excel_v2"]
     save_as = True
     save_on_top = True
     #change_list_template = 'presup_change_list.html'
 
+    actions = ["crea_excel"]
+    def crea_excel(self, request, queryset):
+            return crea_excel_oferta(queryset)
+
+    crea_excel.short_description = "Generar Excel"
+
+    
+
     fields = ( "asunto", "cliente", "moneda", "tasa_cambio", "facturado", "oc_autorizacion")
+
+class LineaAdmin(admin.ModelAdmin):
+
+    list_display = ("link_oferta", "cantidad", "producto", "costo_custom")
+    search_fields = ["oferta__moneda__codigo", "oferta__cliente__nombre", "producto__nombre", "producto__categoria__nombre"]
+    list_filter = ["oferta__cliente__nombre"]
+    #change_list_template = 'itemsPresup_change_list.html'
+
+    actions = None
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
 
 admin.site.register(Oferta, OfertaAdmin)
 admin.site.register(Grupo, GrupoAdmin)
 admin.site.register(Producto, ProductoAdmin)
+admin.site.register(LineaOferta, LineaAdmin)
