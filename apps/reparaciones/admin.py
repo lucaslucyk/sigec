@@ -85,7 +85,7 @@ class LineaAdmin(admin.ModelAdmin):
 
     list_display = ("presup_link", "cantidad", "repuesto", "costo_custom")
     search_fields = ["presupuesto__moneda__codigo", "presupuesto__cliente__nombre", "repuesto__nombre", "repuesto__familia__nombre"]
-    change_list_template = 'itemsPresup_change_list.html'
+    #change_list_template = 'itemsPresup_change_list.html'
 
     actions = None
     def has_add_permission(self, request, obj=None):

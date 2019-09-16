@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from xlsxwriter import Workbook
 from django.conf import settings
 from apps.data.models import Contrato, Cliente, Comercial
-from apps.data.modules.constantes import FORMATOS, CONDIC_PRESUP
+from apps.data.modules.constantes import FORMATOS, CONDIC_PRESUP, CONDIC_OFERTAS
 from apps.reparaciones.models import LineaPresupuesto
 from apps.cotizaciones.models import LineaOferta
 #import openpyxl
@@ -69,7 +69,7 @@ def updateClients(fileRoot="../update_clients/clientes.csv"):
 def format_filas_columnas(sheet):
 	################# ANCHO Y ALTO #################
 	#ancho de cada columna. De A en adelante >>
-	anchuras = (2.86, 5.43, 18.57, 10, 52.29, 5, 7, 5, 7, 5.43)
+	anchuras = (2.86, 5.43, 18.57, 12, 52.29, 5, 7, 5, 7, 5.43)
 
 	for x in range(len(anchuras)):
 		sheet.set_column(x, x, anchuras[x])
@@ -89,13 +89,13 @@ def imp_cabeceras(book, sheet, obj, headerFrom=""):
 		Imprime las cabeceras, la imagen del logo y revuelve la posición de la fila donde termina
 	'''
 	header = {
-		"Para": [2,2, book.add_format(FORMATOS.get("headerKeys"))],
+		"Para:": [2,2, book.add_format(FORMATOS.get("headerKeys"))],
 		obj.cliente.nombre: [2,3],
 
 		"Presupuesto N°:" if "presupuesto" in f'{obj._meta}' else "Oferta N°": [4,2, book.add_format(FORMATOS.get("headerKeys"))],
 		obj.id: [4,3, book.add_format(FORMATOS.get("izquierda"))],
 
-		"Fecha": [6,2, book.add_format(FORMATOS.get("headerKeys"))],
+		"Fecha:": [6,2, book.add_format(FORMATOS.get("headerKeys"))],
 		obj.fecha: [6,3,book.add_format(FORMATOS.get("fechaIzq"))],
 
 		f'De: {headerFrom}': [6, 9, book.add_format(FORMATOS.get("bajoImg"))],
@@ -146,23 +146,59 @@ def imp_linea_vacia(book, sheet, row, col, final=False, condiciones=False):
 	for c in range(len(formatosItems)):
 		sheet.write(row, c+col, "", formatosItems[c])
 
-def imp_linea_total(book, sheet, row, col, moneda, initialRow, final=False, grupo="", monto=0):
+def imp_linea_total(book, sheet, row, col, moneda, initialRow, final=False, grupo="", monto=0, descuento=False):
 	'''
 		Imprime una línea de total con los formatos correspondientes
 	'''
 	sheet.write(row, col, "", book.add_format(FORMATOS.get("item_BI")))
 	sheet.write(row, col+1, "", book.add_format(FORMATOS.get("item_BI")))
-	sheet.write(row, col+2, f'_____ TOTAL {"OFERTA" if not grupo else ""} {grupo.upper()}_____', book.add_format(dict(
-																						**FORMATOS.get("item_BI"),
-																						**FORMATOS.get("negrita"),
-																						)))
-	sheet.write(row, col+3, "", book.add_format(FORMATOS.get("item_BI")))
-	sheet.write(row, col+5, moneda, book.add_format(FORMATOS.get("item_BI")))
-	if monto:
-		sheet.write(row, col+6, monto, book.add_format(FORMATOS.get("item_SB")))
+	if grupo:
+		sheet.write(row, col+2, f'.....................Total {grupo.title()}.....................', book.add_format(dict(
+																									**FORMATOS.get("item_BI"),
+																									**FORMATOS.get("negrita"),
+																									**FORMATOS.get("segoe"),
+																									**FORMATOS.get("rojo") if descuento else {},)))
 	else:
-		sheet.write_formula(row, col+6, f'SUM(I{initialRow+1}:I{row})', book.add_format(FORMATOS.get("item_SB")))
-	sheet.write(row, col+7, "+ IVA", book.add_format(FORMATOS.get("item_BD")))
+		sheet.write(row, col+2, f'.........................TOTAL OFERTA.........................', book.add_format(dict(
+																									**FORMATOS.get("item_BI"),
+																									**FORMATOS.get("negrita"),
+																									**FORMATOS.get("segoe"),)))
+	sheet.write(row, col+3, "", book.add_format(FORMATOS.get("item_BI")))
+	sheet.write(row, col+5, moneda, book.add_format(dict(
+														**FORMATOS.get("item_BI"),
+														**FORMATOS.get("negrita"),
+														**FORMATOS.get("rojo") if descuento else {})))
+
+	if monto:
+		sheet.write(row, col+6, monto, book.add_format(dict(
+														**FORMATOS.get("item_SB"),
+														**FORMATOS.get("negrita"),
+														**FORMATOS.get("rojo") if descuento else {})))
+	else:
+		sheet.write_formula(row, col+6, f'SUM(I{initialRow+1}:I{row})', book.add_format(dict(**FORMATOS.get("item_SB"),**FORMATOS.get("negrita"))))
+
+	sheet.write(row, col+7, "+ IVA", book.add_format(dict(
+														**FORMATOS.get("item_BD"),
+														**FORMATOS.get("negrita"),
+														**FORMATOS.get("rojo") if descuento else {})))
+
+def imp_linea_categoria(book, sheet, row, col, grupo=""):
+	'''
+		Imprime una línea de cabecera del grupo
+	'''
+	sheet.write(row, col, "", book.add_format(dict(**FORMATOS.get("item_BI"), **FORMATOS.get("bg_gris"))))
+	sheet.write(row, col+1, "", book.add_format(dict(**FORMATOS.get("item_BI"), **FORMATOS.get("bg_gris"))))
+	sheet.write(row, col+2, f'{grupo.title()}', book.add_format(dict(
+																	**FORMATOS.get("item_BI"),
+																	**FORMATOS.get("negrita"),
+																	**FORMATOS.get("bg_gris"),
+																	**FORMATOS.get("segoe"),
+																	)))
+	sheet.write(row, col+3, "", book.add_format(dict(**FORMATOS.get("item_BI"), **FORMATOS.get("bg_gris"))))
+	sheet.write(row, col+4, "", book.add_format(dict(**FORMATOS.get("item_SB"), **FORMATOS.get("bg_gris"))))
+	sheet.write(row, col+5, "", book.add_format(dict(**FORMATOS.get("item_BI"), **FORMATOS.get("bg_gris"))))
+	sheet.write(row, col+6, "", book.add_format(dict(**FORMATOS.get("item_SB"), **FORMATOS.get("bg_gris"))))
+	sheet.write(row, col+7, "", book.add_format(dict(**FORMATOS.get("item_BD"), **FORMATOS.get("bg_gris"))))
 
 def imp_condiciones(book, sheet, row, col, tipo="presupuesto"):
 	'''
@@ -174,7 +210,9 @@ def imp_condiciones(book, sheet, row, col, tipo="presupuesto"):
 	imp_linea_vacia(book, sheet, row, col, final=False, condiciones=True)
 	row += 1
 
-	for condicion in CONDIC_PRESUP:
+	condic_to_print = CONDIC_PRESUP if tipo == "presupuesto" else CONDIC_OFERTAS
+
+	for condicion in condic_to_print:
 
 		sheet.set_row(row, condicion.get("altura")) if condicion.get("altura") else None
 
@@ -222,7 +260,7 @@ def crea_excel_presupuesto(queryset):
 	col = 2
 
 	################# ASUNTO #################
-	sheet.merge_range(row, col, row, col+7, obj.asunto.title(), book.add_format(FORMATOS.get("headerGrupos")) )
+	sheet.merge_range(row, col, row, col+7, obj.asunto.upper(), book.add_format(FORMATOS.get("headerGrupos")) )
 	
 	row += 2
 	col = 2
@@ -314,7 +352,7 @@ def crea_excel_oferta(queryset):
 	col = 2
 
 	################# ASUNTO #################
-	sheet.merge_range(row, col, row, col+7, obj.asunto.title(), book.add_format(FORMATOS.get("headerGrupos")) )
+	sheet.merge_range(row, col, row, col+7, obj.asunto.upper(), book.add_format(FORMATOS.get("headerGrupos")) )
 	
 	row += 2
 	col = 2
@@ -347,19 +385,35 @@ def crea_excel_oferta(queryset):
 	
 	parcial = row
 	categAnt = ""
-	#categAct = ""
-	#imprimiendo valores...
+
 	for obj in queryset:
+
+		for linea in lineas[:1]:
+			################# AGRUPADOR INICIAL #################
+			categAnt = linea.producto.categoria.nombre
+			imp_linea_categoria(book, sheet, row, col, grupo=categAnt)
+			row += 1
+
 		for linea in lineas:
+
 			categAnt = linea.producto.categoria.nombre if not categAnt else categAnt
 			categAct = linea.producto.categoria.nombre
 
-			if categAnt is not categAct:
+			#print(f'{categAnt != categAct} - |{categAnt}| vs |{categAct}|')
+
+			if categAnt != categAct:
+				################# LINEA TOTAL #################
 				imp_linea_total(book, sheet, row, col, obj.moneda.codigo, parcial, final=False, grupo=categAnt)
 				row += 1
+
 				################# LINEA VACIA #################
 				imp_linea_vacia(book, sheet, row, col)
 				row += 1
+
+				################# AGRUPADOR #################
+				imp_linea_categoria(book, sheet, row, col, grupo=categAct)
+				row += 1
+
 				categAnt = ""
 				parcial = row
 
@@ -367,23 +421,40 @@ def crea_excel_oferta(queryset):
 			sheet.write(row, col+1, linea.cantidad, book.add_format(FORMATOS.get("item_BI")))
 			sheet.write(row, col+2, linea.producto.descripcion, book.add_format(FORMATOS.get("item_BI")))    #descripcion
 			sheet.write(row, col+3, obj.moneda.codigo, book.add_format(FORMATOS.get("item_BI")))
-			sheet.write(row, col+4, linea.costo_custom if linea.costo_custom else linea.producto.costo * obj.tasa_cambio, book.add_format(FORMATOS.get("item_SB")))
+
+			if obj.tasa_cambio < 1:	
+				#hay descuento
+				#imprimo el costo real de cada producto para luego hacer notorio el descuento
+				sheet.write(row, col+4, linea.costo_custom if linea.costo_custom else linea.producto.costo, book.add_format(FORMATOS.get("item_SB")))
+			else:
+				sheet.write(row, col+4, linea.costo_custom if linea.costo_custom else linea.producto.costo * obj.tasa_cambio, book.add_format(FORMATOS.get("item_SB")))
+
 			sheet.write(row, col+5, obj.moneda.codigo, book.add_format(FORMATOS.get("item_BI")))
 			sheet.write_formula(row, col+6, f'D{row+1}*G{row+1}', book.add_format(FORMATOS.get("item_SB")))
 			sheet.write(row, col+7,"+ IVA", book.add_format(FORMATOS.get("item_BD")))
 			
 			row +=1
 			
-	################# FIN ITEMS #################
-	imp_linea_total(book, sheet, row, col, obj.moneda.codigo, parcial, final=False, grupo=categAnt)
-	row += 1
-	################# LINEA VACIA #################
-	imp_linea_vacia(book, sheet, row, col)
-	
-	################# LINEA TOTAL #################
-	row += 1
-	imp_linea_total(book, sheet, row, col, obj.moneda.codigo, initialRow, monto=obj.costo_total())
-	
+		################# FIN ITEMS #################
+		imp_linea_total(book, sheet, row, col, obj.moneda.codigo, parcial, final=False, grupo=categAnt)
+		row += 1
+		################# LINEA VACIA #################
+		imp_linea_vacia(book, sheet, row, col)
+		row += 1
+
+		if obj.tasa_cambio < 1: #hay descuento
+			imp_linea_total(book, sheet, row, col, obj.moneda.codigo, initialRow, monto=obj.costo_sin_descuento(), grupo="Parcial")
+			row += 1
+			imp_linea_total(book, sheet, row, col, obj.moneda.codigo, initialRow, monto=obj.costo_sin_descuento() - obj.costo_total(), grupo=f'bonificado ({obj.descuento_aplicado()})', descuento=True)
+			row += 1
+
+			################# LINEA VACIA #################
+			imp_linea_vacia(book, sheet, row, col)
+			row += 1
+
+		################# LINEA TOTAL #################
+		imp_linea_total(book, sheet, row, col, obj.moneda.codigo, initialRow, monto=obj.costo_total())
+		
 	################# LINEA FINAL #################
 	row += 1
 	imp_linea_vacia(book, sheet, row, col, final=True)

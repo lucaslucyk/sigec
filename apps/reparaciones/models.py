@@ -4,6 +4,8 @@ from django.utils.safestring import mark_safe
 from django.urls import reverse
 from django.contrib.auth.models import User
 from apps.data.models import Cliente, Moneda
+from django.core.validators import MaxValueValidator, MinValueValidator
+from decimal import Decimal
 
 class FamiliaRepuesto(models.Model):
     nombre = models.CharField(max_length=50, unique=True, null=False)
@@ -19,7 +21,7 @@ class FamiliaRepuesto(models.Model):
 class Repuesto(models.Model):
     codigo = models.CharField(max_length=20, unique=True)
     nombre = models.CharField(max_length=50, unique=True)
-    costo = models.IntegerField()
+    costo = models.DecimalField(default=0, max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))], help_text='')
     familia = models.ForeignKey(FamiliaRepuesto, null=True, blank=False, on_delete=models.SET_NULL)
 
     def __str__(self):
@@ -49,7 +51,7 @@ class Presupuesto(models.Model):
         valorFinal = 0
         for val in lineas:
             valorFinal += val.costo_custom * val.cantidad if val.costo_custom else val.repuesto.costo * val.cantidad * self.tasa_cambio
-        return valorFinal
+        return "%.02f"%(valorFinal)
 
     @mark_safe
     def fileLink(self):
@@ -81,8 +83,8 @@ class Presupuesto(models.Model):
 class LineaPresupuesto(models.Model):
     presupuesto = models.ForeignKey(Presupuesto, null=True, blank=False, on_delete=models.CASCADE)
     repuesto = models.ForeignKey(Repuesto, null=False, blank=False, on_delete=models.CASCADE)
-    cantidad = models.IntegerField(default=1)
-    costo_custom = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+    cantidad = models.PositiveIntegerField(default=1)
+    costo_custom = models.DecimalField(default=0, max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('0.00'))], help_text='')
 
     @mark_safe
     def presup_link(self):

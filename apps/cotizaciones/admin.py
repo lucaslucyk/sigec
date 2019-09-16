@@ -1,5 +1,5 @@
 from django.contrib import admin
-from apps.cotizaciones.models import Grupo, Producto, Oferta, LineaOferta
+from apps.cotizaciones.models import Grupo, Producto, Oferta, LineaOferta, Descuento
 from apps.data.modules.functions import crea_excel_oferta
 
 class GrupoAdmin(admin.ModelAdmin):
@@ -26,8 +26,19 @@ class ItemsInLine(admin.StackedInline):
     #raw_id_fields = ("repuesto",)
     autocomplete_fields = ["producto"]
 
+class DescuentoAdmin(admin.ModelAdmin):
+    search_fields = ["descuento", "categoria__nombre"]
+    ordering = ("descuento", "categoria__nombre")
+    #autocomplete_fields = ["categoria__nombre"]
+
+class DescuentosInLine(admin.StackedInline):
+    model = Descuento
+    extra = 0
+    ordering = ("descuento",)
+    autocomplete_fields = ["categoria"]
+
 class OfertaAdmin(admin.ModelAdmin):
-    inlines = [ItemsInLine]
+    inlines = [DescuentosInLine, ItemsInLine]
 
     list_display = ("id", "asunto", "fecha","cliente","moneda","tasa_cambio","costo_total", "facturado", "fileLink", "usuario")
     readonly_fields = ['fileLink']
