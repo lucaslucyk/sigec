@@ -2,6 +2,9 @@ from django.contrib import admin
 from apps.cotizaciones.models import Grupo, Producto, Oferta, LineaOferta, Descuento
 from apps.data.modules.functions import crea_excel_oferta
 
+#from django.core.exceptions import ValidationError
+#from django import forms
+
 class GrupoAdmin(admin.ModelAdmin):
     list_display = ("nombre",)
     search_fields = ["nombre"]
@@ -38,6 +41,8 @@ class DescuentosInLine(admin.StackedInline):
     autocomplete_fields = ["categoria"]
 
 class OfertaAdmin(admin.ModelAdmin):
+    #form = OfertaForm
+
     inlines = [DescuentosInLine, ItemsInLine]
 
     list_display = ("id", "asunto", "fecha","cliente","moneda","tasa_cambio","costo_total", "facturado", "fileLink", "usuario")
@@ -45,6 +50,7 @@ class OfertaAdmin(admin.ModelAdmin):
     list_filter = ["moneda", "facturado", "usuario"]
     search_fields = ['cliente__nombre', "asunto", "id", "usuario__first_name", "usuario__last_name", "usuario__username", "producto__codigo", "producto__descripcion", ]
     list_display_links = ["id", "asunto"]
+    fields = ( "asunto", "cliente", "moneda", "tasa_cambio", "facturado", "oc_autorizacion")
     #list_editable =["facturado"]
     #ordering = ("id",'asunto')
     #raw_id_fields = ("cliente",)
@@ -57,14 +63,15 @@ class OfertaAdmin(admin.ModelAdmin):
     #change_list_template = 'presup_change_list.html'
 
     actions = ["crea_excel"]
+
     def crea_excel(self, request, queryset):
             return crea_excel_oferta(queryset)
-
     crea_excel.short_description = "Generar Excel"
 
-    
-
-    fields = ( "asunto", "cliente", "moneda", "tasa_cambio", "facturado", "oc_autorizacion")
+    # def save_model(self, request, obj, form, change):
+    #     if obj.tasa_cambio < 1:
+    #         raise ValidationError("La tasa de cambio de menor a 1.")
+    #     obj.save()
 
 class LineaAdmin(admin.ModelAdmin):
 

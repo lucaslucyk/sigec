@@ -153,7 +153,7 @@ def imp_linea_total(book, sheet, row, col, moneda, initialRow, final=False, grup
 	sheet.write(row, col, "", book.add_format(FORMATOS.get("item_BI")))
 	sheet.write(row, col+1, "", book.add_format(FORMATOS.get("item_BI")))
 	if grupo:
-		sheet.write(row, col+2, f'.....................Total {grupo.title()}.....................', book.add_format(dict(
+		sheet.write(row, col+2, f'{".....................Total" if not descuento else ""} {grupo.title()}.....................', book.add_format(dict(
 																									**FORMATOS.get("item_BI"),
 																									**FORMATOS.get("negrita"),
 																									**FORMATOS.get("segoe"),
@@ -422,12 +422,15 @@ def crea_excel_oferta(queryset):
 			sheet.write(row, col+2, linea.producto.descripcion, book.add_format(FORMATOS.get("item_BI")))    #descripcion
 			sheet.write(row, col+3, obj.moneda.codigo, book.add_format(FORMATOS.get("item_BI")))
 
+			'''
 			if obj.tasa_cambio < 1:	
 				#hay descuento
 				#imprimo el costo real de cada producto para luego hacer notorio el descuento
 				sheet.write(row, col+4, linea.costo_custom if linea.costo_custom else linea.producto.costo, book.add_format(FORMATOS.get("item_SB")))
 			else:
-				sheet.write(row, col+4, linea.costo_custom if linea.costo_custom else linea.producto.costo * obj.tasa_cambio, book.add_format(FORMATOS.get("item_SB")))
+			'''
+			
+			sheet.write(row, col+4, linea.costo_custom if linea.costo_custom else linea.producto.costo * obj.tasa_cambio, book.add_format(FORMATOS.get("item_SB")))
 
 			sheet.write(row, col+5, obj.moneda.codigo, book.add_format(FORMATOS.get("item_BI")))
 			sheet.write_formula(row, col+6, f'D{row+1}*G{row+1}', book.add_format(FORMATOS.get("item_SB")))
@@ -442,13 +445,18 @@ def crea_excel_oferta(queryset):
 		imp_linea_vacia(book, sheet, row, col)
 		row += 1
 
-		if obj.tasa_cambio < 1: #hay descuento
-			imp_linea_total(book, sheet, row, col, obj.moneda.codigo, initialRow, monto=obj.costo_sin_descuento(), grupo="Parcial")
+		################# DESCUENTOS #################
+		descuentos = obj.get_descuentos()
+		if descuentos:
+			imp_linea_categoria(book, sheet, row, col, grupo="Bonificaciones")
 			row += 1
-			imp_linea_total(book, sheet, row, col, obj.moneda.codigo, initialRow, monto=obj.costo_sin_descuento() - obj.costo_total(), grupo=f'bonificado ({obj.descuento_aplicado()})', descuento=True)
+			for k,v in descuentos.items():
+				imp_linea_total(book, sheet, row, col, obj.moneda.codigo, initialRow, monto=obj.get_categoria_sin_descuento(k) - obj.get_costo_categoria(k), grupo=f'{k} ({v}% OFF)', descuento=True)
+				row += 1
+				
+		if descuentos:
+			imp_linea_total(book, sheet, row, col, obj.moneda.codigo, initialRow, monto=obj.get_total_descuentos(), grupo=f'.....................TOTAL BONIFICADO', descuento=True)
 			row += 1
-
-			################# LINEA VACIA #################
 			imp_linea_vacia(book, sheet, row, col)
 			row += 1
 
