@@ -69,7 +69,7 @@ def updateClients(fileRoot="../update_clients/clientes.csv"):
 def format_filas_columnas(sheet):
 	################# ANCHO Y ALTO #################
 	#ancho de cada columna. De A en adelante >>
-	anchuras = (2.86, 5.43, 18.57, 12, 52.29, 5, 7, 5, 7, 5.43)
+	anchuras = (2.86, 5.43, 18.57, 14, 52.29, 5, 7, 5, 8, 5.43)
 
 	for x in range(len(anchuras)):
 		sheet.set_column(x, x, anchuras[x])
@@ -88,21 +88,31 @@ def imp_cabeceras(book, sheet, obj, headerFrom=""):
 	'''
 		Imprime las cabeceras, la imagen del logo y revuelve la posición de la fila donde termina
 	'''
-	header = {
-		"Para:": [2,2, book.add_format(FORMATOS.get("headerKeys"))],
-		obj.cliente.nombre: [2,3],
+	header = [ 
+		["Para:", [2,2, book.add_format(FORMATOS.get("headerKeys"))]],
+		[obj.cliente.nombre, [2,3]],
+			
+		["Presupuesto N°:" if "presupuesto" in f'{obj._meta}' else "Oferta N°:", [3,2, book.add_format(FORMATOS.get("headerKeys"))]],
+		[obj.id, [3,3, book.add_format(FORMATOS.get("izquierda"))]],
 
-		"Presupuesto N°:" if "presupuesto" in f'{obj._meta}' else "Oferta N°": [4,2, book.add_format(FORMATOS.get("headerKeys"))],
-		obj.id: [4,3, book.add_format(FORMATOS.get("izquierda"))],
+		["Fecha:", [4,2, book.add_format(FORMATOS.get("headerKeys"))]],
+		[obj.fecha, [4,3,book.add_format(FORMATOS.get("fechaIzq"))]],
 
-		"Fecha:": [6,2, book.add_format(FORMATOS.get("headerKeys"))],
-		obj.fecha: [6,3,book.add_format(FORMATOS.get("fechaIzq"))],
+		['Moneda Cliente:', [5,2, book.add_format(FORMATOS.get("headerKeys"))]],
+		[f'{obj.cliente.moneda.nombre}', [5,3, book.add_format(FORMATOS.get("izquierda"))]],
 
-		f'De: {headerFrom}': [6, 9, book.add_format(FORMATOS.get("bajoImg"))],
-	}
+		['Moneda Oferta:', [6,2, book.add_format(FORMATOS.get("headerKeys"))]],
+		[f'{obj.moneda.nombre}', [6,3, book.add_format(FORMATOS.get("izquierda"))]],
+
+		[f'De: {headerFrom}', [6, 9, book.add_format(FORMATOS.get("bajoImg"))]],
+	]
+
+	if obj.tasa_cambio != 1:
+		header.append([f'Tasa de cambio: {round(obj.tasa_cambio,2)}', [6,4, book.add_format(FORMATOS.get("derecha"))]])
+		
 	#Imprime las cabeceras
 	row = 0
-	for k,v in header.items():
+	for k,v in header:
 		sheet.write(*v[:2], k, v[2] if len(v)==3 else None)
 		row = v[0]
 
@@ -379,90 +389,97 @@ def crea_excel_oferta(queryset):
 	imp_linea_vacia(book, sheet, row, col)
 
 	################# ITEMS #################
-	row += 1
-	lineas = LineaOferta.objects.filter(oferta=obj.id).order_by('producto__categoria__nombre')
-	initialRow = row
 	
-	parcial = row
-	categAnt = ""
-
-	for obj in queryset:
-
-		for linea in lineas[:1]:
-			################# AGRUPADOR INICIAL #################
-			categAnt = linea.producto.categoria.nombre
-			imp_linea_categoria(book, sheet, row, col, grupo=categAnt)
-			row += 1
-
-		for linea in lineas:
-
-			categAnt = linea.producto.categoria.nombre if not categAnt else categAnt
-			categAct = linea.producto.categoria.nombre
-
-			#print(f'{categAnt != categAct} - |{categAnt}| vs |{categAct}|')
-
-			if categAnt != categAct:
-				################# LINEA TOTAL #################
-				imp_linea_total(book, sheet, row, col, obj.moneda.codigo, parcial, final=False, grupo=categAnt)
-				row += 1
-
-				################# LINEA VACIA #################
-				imp_linea_vacia(book, sheet, row, col)
-				row += 1
-
-				################# AGRUPADOR #################
-				imp_linea_categoria(book, sheet, row, col, grupo=categAct)
-				row += 1
-
-				categAnt = ""
-				parcial = row
-
-			sheet.write(row, col, linea.producto.codigo, book.add_format(FORMATOS.get("item_BI")))
-			sheet.write(row, col+1, linea.cantidad, book.add_format(FORMATOS.get("item_BI")))
-			sheet.write(row, col+2, linea.producto.descripcion, book.add_format(FORMATOS.get("item_BI")))    #descripcion
-			sheet.write(row, col+3, obj.moneda.codigo, book.add_format(FORMATOS.get("item_BI")))
-
-			'''
-			if obj.tasa_cambio < 1:	
-				#hay descuento
-				#imprimo el costo real de cada producto para luego hacer notorio el descuento
-				sheet.write(row, col+4, linea.costo_custom if linea.costo_custom else linea.producto.costo, book.add_format(FORMATOS.get("item_SB")))
-			else:
-			'''
-			
-			sheet.write(row, col+4, linea.costo_custom if linea.costo_custom else linea.producto.costo * obj.tasa_cambio, book.add_format(FORMATOS.get("item_SB")))
-
-			sheet.write(row, col+5, obj.moneda.codigo, book.add_format(FORMATOS.get("item_BI")))
-			sheet.write_formula(row, col+6, f'D{row+1}*G{row+1}', book.add_format(FORMATOS.get("item_SB")))
-			sheet.write(row, col+7,"+ IVA", book.add_format(FORMATOS.get("item_BD")))
-			
-			row +=1
-			
-		################# FIN ITEMS #################
-		imp_linea_total(book, sheet, row, col, obj.moneda.codigo, parcial, final=False, grupo=categAnt)
+	lineas = LineaOferta.objects.filter(oferta=obj.id).order_by('producto__categoria__nombre')
+	
+	if lineas:
 		row += 1
-		################# LINEA VACIA #################
-		imp_linea_vacia(book, sheet, row, col)
-		row += 1
+		initialRow = row
+		parcial = row
+		categAnt = ""
 
-		################# DESCUENTOS #################
-		descuentos = obj.get_descuentos()
-		if descuentos:
-			imp_linea_categoria(book, sheet, row, col, grupo="Bonificaciones")
-			row += 1
-			for k,v in descuentos.items():
-				imp_linea_total(book, sheet, row, col, obj.moneda.codigo, initialRow, monto=obj.get_categoria_sin_descuento(k) - obj.get_costo_categoria(k), grupo=f'{k} ({v}% OFF)', descuento=True)
+		for obj in queryset:
+
+			for linea in lineas[:1]:
+				################# AGRUPADOR INICIAL #################
+				categAnt = linea.producto.categoria.nombre
+				imp_linea_categoria(book, sheet, row, col, grupo=categAnt)
 				row += 1
+
+			for linea in lineas:
+
+				categAnt = linea.producto.categoria.nombre if not categAnt else categAnt
+				categAct = linea.producto.categoria.nombre
+
+				#print(f'{categAnt != categAct} - |{categAnt}| vs |{categAct}|')
+
+				if categAnt != categAct:
+					################# LINEA TOTAL #################
+					imp_linea_total(book, sheet, row, col, obj.moneda.codigo, parcial, final=False, grupo=categAnt)
+					row += 1
+
+					################# LINEA VACIA #################
+					imp_linea_vacia(book, sheet, row, col)
+					row += 1
+
+					################# AGRUPADOR #################
+					imp_linea_categoria(book, sheet, row, col, grupo=categAct)
+					row += 1
+
+					categAnt = ""
+					parcial = row
+
+				sheet.write(row, col, linea.producto.codigo, book.add_format(FORMATOS.get("item_BI")))
+				sheet.write(row, col+1, linea.cantidad, book.add_format(FORMATOS.get("item_BI")))
+				sheet.write(row, col+2, linea.producto.descripcion, book.add_format(FORMATOS.get("item_BI")))    #descripcion
+				sheet.write(row, col+3, obj.moneda.codigo, book.add_format(FORMATOS.get("item_BI")))
+
+				'''
+				if obj.tasa_cambio < 1:	
+					#hay descuento
+					#imprimo el costo real de cada producto para luego hacer notorio el descuento
+					sheet.write(row, col+4, linea.costo_custom if linea.costo_custom else linea.producto.costo, book.add_format(FORMATOS.get("item_SB")))
+				else:
+				'''
 				
-		if descuentos:
-			imp_linea_total(book, sheet, row, col, obj.moneda.codigo, initialRow, monto=obj.get_total_descuentos(), grupo=f'.....................TOTAL BONIFICADO', descuento=True)
+				sheet.write(row, col+4, linea.costo_custom if linea.costo_custom else linea.producto.costo * obj.tasa_cambio, book.add_format(FORMATOS.get("item_SB")))
+
+				sheet.write(row, col+5, obj.moneda.codigo, book.add_format(FORMATOS.get("item_BI")))
+				sheet.write_formula(row, col+6, f'D{row+1}*G{row+1}', book.add_format(FORMATOS.get("item_SB")))
+				sheet.write(row, col+7,"+ IVA", book.add_format(FORMATOS.get("item_BD")))
+				
+				row +=1
+				
+			################# FIN ITEMS #################
+			imp_linea_total(book, sheet, row, col, obj.moneda.codigo, parcial, final=False, grupo=categAnt)
 			row += 1
+			################# LINEA VACIA #################
 			imp_linea_vacia(book, sheet, row, col)
 			row += 1
 
-		################# LINEA TOTAL #################
-		imp_linea_total(book, sheet, row, col, obj.moneda.codigo, initialRow, monto=obj.costo_total())
-		
+			################# DESCUENTOS #################
+			descuentos = obj.get_descuentos()
+			if descuentos:
+				imp_linea_categoria(book, sheet, row, col, grupo="Bonificaciones")
+				row += 1
+				desc_total = False
+				if "TOTAL" in descuentos:
+					imp_linea_total(book, sheet, row, col, obj.moneda.codigo, initialRow, monto=obj.get_categoria_sin_descuento(k) - obj.get_costo_categoria(k), grupo=f'{k} ({v}% OFF)', descuento=True)
+					row += 1
+				else:
+					for k,v in descuentos.items():
+						imp_linea_total(book, sheet, row, col, obj.moneda.codigo, initialRow, monto=obj.get_categoria_sin_descuento(k) - obj.get_costo_categoria(k), grupo=f'{k} ({v}% OFF)', descuento=True)
+						row += 1
+					
+			if descuentos:
+				imp_linea_total(book, sheet, row, col, obj.moneda.codigo, initialRow, monto=obj.get_total_descuentos(), grupo=f'.....................TOTAL BONIFICADO', descuento=True)
+				row += 1
+				imp_linea_vacia(book, sheet, row, col)
+				row += 1
+
+			################# LINEA TOTAL #################
+			imp_linea_total(book, sheet, row, col, obj.moneda.codigo, initialRow, monto=obj.costo_total())
+			
 	################# LINEA FINAL #################
 	row += 1
 	imp_linea_vacia(book, sheet, row, col, final=True)

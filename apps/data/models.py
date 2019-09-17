@@ -27,11 +27,12 @@ class Contrato(models.Model):
         verbose_name_plural = 'Contratos'
 
 class Moneda(models.Model):
-    codigo = models.CharField(max_length=20, unique=True)
+    codigo = models.CharField(max_length=20)
     nombre = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
-        return ("%s"%(self.codigo))
+        #return ("%s"%(self.codigo))
+        return f'{self.codigo} | {self.nombre}'
 
     class Meta:
         verbose_name = 'Moneda'
@@ -44,6 +45,8 @@ class Cliente(models.Model):
     #sla = models.ForeignKey(Contrato, null=True, blank=True, on_delete=models.CASCADE)
     sla = models.ManyToManyField(Contrato, blank=True)
     vencimiento_sla = models.DateField()
+    #tipo_moneda = models.ForeignKey("Tipo de moneda", Moneda, default=1, on_delete=models.SET_NULL)
+    moneda = models.ForeignKey(Moneda, null=True, blank=True, default=1, on_delete=models.SET_NULL)
 
     def mantenim_activo(self):
         activo = True if self.sla and self.vencimiento_sla > datetime.now().date() else False

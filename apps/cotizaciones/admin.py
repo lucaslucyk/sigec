@@ -24,7 +24,7 @@ class ProductoAdmin(admin.ModelAdmin):
 
 class ItemsInLine(admin.StackedInline):
     model = LineaOferta
-    extra = 2
+    extra = 1
     ordering = ("producto__codigo",)
     #raw_id_fields = ("repuesto",)
     autocomplete_fields = ["producto"]
@@ -45,10 +45,10 @@ class OfertaAdmin(admin.ModelAdmin):
 
     inlines = [DescuentosInLine, ItemsInLine]
 
-    list_display = ("id", "asunto", "fecha","cliente","moneda","tasa_cambio","costo_total", "facturado", "fileLink", "usuario")
+    list_display = ("id", "asunto", "fecha","cliente","moneda","tasa_cambio","costo_total")#, "facturado", "fileLink", "usuario")
     readonly_fields = ['fileLink']
     list_filter = ["moneda", "facturado", "usuario"]
-    search_fields = ['cliente__nombre', "asunto", "id", "usuario__first_name", "usuario__last_name", "usuario__username", "producto__codigo", "producto__descripcion", ]
+    search_fields = ['cliente__nombre', "asunto", "id", "usuario__first_name", "usuario__last_name", "usuario__username", "moneda__codigo", "moneda__nombre" ]
     list_display_links = ["id", "asunto"]
     fields = ( "asunto", "cliente", "moneda", "tasa_cambio", "facturado", "oc_autorizacion")
     #list_editable =["facturado"]
@@ -76,7 +76,7 @@ class OfertaAdmin(admin.ModelAdmin):
 class LineaAdmin(admin.ModelAdmin):
 
     list_display = ("link_oferta", "cantidad", "producto", "costo_custom")
-    search_fields = ["oferta__moneda__codigo", "oferta__cliente__nombre", "producto__nombre", "producto__categoria__nombre"]
+    search_fields = ["oferta__moneda__codigo", "oferta__cliente__nombre", "producto__codigo", "producto__categoria__nombre", "producto__descripcion"]
     list_filter = ["oferta__cliente__nombre"]
     #change_list_template = 'itemsPresup_change_list.html'
 

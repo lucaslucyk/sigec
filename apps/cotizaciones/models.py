@@ -51,7 +51,7 @@ class Producto(models.Model):
     get_short_descrip.short_description = "Descripcion"
 
     def __str__(self):
-        return "{}{}".format(self.descripcion[:50], "..." if len(self.descripcion)>50 else "")
+        return "{} | {}{}".format(self.codigo, self.descripcion[:50], "..." if len(self.descripcion)>50 else "")
 
     class Meta:
         verbose_name = "Producto"
@@ -64,7 +64,7 @@ class Oferta(models.Model):
     fecha = models.DateField(auto_now_add=True, null=True)
     cliente = models.ForeignKey(Cliente, null=True, blank=True, on_delete=models.CASCADE)
     moneda = models.ForeignKey(Moneda, null=True, blank=True, default=1, on_delete=models.CASCADE)
-    tasa_cambio = models.DecimalField(default=1.00, max_digits=10, decimal_places=2)
+    tasa_cambio = models.DecimalField("Tasa de cambio", default=1.00, max_digits=10, decimal_places=2)
     oc_autorizacion = models.FileField("OC - Aprobacion", null=True, blank=True, upload_to='oc_autoriz/ofertas/', help_text="Se agrega al obtener la OC o aprobación del cliente.")
     facturado = models.BooleanField(default=False)
 

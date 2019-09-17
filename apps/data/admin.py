@@ -34,7 +34,7 @@ class ClienteAdmin(admin.ModelAdmin):
     actions = ["update_clients"]
     list_display_links = ['nombre','id_sage']
     list_per_page = 25
-    autocomplete_fields = ["sla", "comercial"]
+    autocomplete_fields = ["sla", "comercial", "moneda"]
     save_as = True
     save_on_top = True
     change_list_template = 'clte_change_list.html'
