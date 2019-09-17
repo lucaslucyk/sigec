@@ -13,7 +13,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'p3o3or6fsa-%!!go0=iae9=+c&zl3l@9(2p61$&5r*5e7fk&(1'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = True if not os.environ.get("SIGECDB") else False
 
 ALLOWED_HOSTS = ['*']
 
@@ -71,7 +71,7 @@ WSGI_APPLICATION = 'sigec.wsgi.application'
 #Caso contrario, se toma la por defecto
 #El formato de la config en variables de entorno es Key1=Val1;Key2=Val2
 
-if not os.environ.get("DBDATA"):
+if not os.environ.get("SIGECDB"):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -80,7 +80,7 @@ if not os.environ.get("DBDATA"):
     }
 else:
     DATABASES = {
-        'default': dict(elem.split("=") for elem in os.environ.get("DBDATA").split(";"))
+        'default': dict(elem.split("=") for elem in os.environ.get("SIGECDB").split(";"))
     }
 
 
