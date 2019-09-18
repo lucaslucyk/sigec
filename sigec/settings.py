@@ -1,6 +1,11 @@
 import os
 
-VERSION = "0.1"
+VERSION = "1.3.3"
+'''
+    VERSION:    1   - INICIAL
+    RELEASE:    3   - DESCUENTOS VARIABLES
+    FIX:        3   - IGNORE MIGRATIONS FOR PULL 
+'''
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

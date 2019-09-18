@@ -30,7 +30,8 @@ class Producto(models.Model):
     software_compatible = models.ManyToManyField(Software, blank=True)
 
     imagen = models.ImageField("Imagen", null=True, blank=True, upload_to='imgs_producto/', help_text="Si no se carga, usa la imagen del grupo.")
-    descripcion = models.CharField(unique=True, blank=False, max_length=255)
+    #descripcion = models.CharField(unique=True, blank=False, max_length=255)
+    descripcion = models.TextField(blank=False)
 
     @mark_safe
     def img_display(self):
