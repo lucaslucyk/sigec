@@ -84,8 +84,8 @@ class LineaAdmin(admin.ModelAdmin):
     def has_add_permission(self, request, obj=None):
         return False
 
-    def has_delete_permission(self, request, obj=None):
-        return False
+    #def has_delete_permission(self, request, obj=None):
+        #return True if request.user.is_superuser else False
 
     def has_change_permission(self, request, obj=None):
         return False

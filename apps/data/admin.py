@@ -48,6 +48,7 @@ class ClienteAdmin(admin.ModelAdmin):
             return
 
         try:
+            #print(settings.FILE_CLIENTES)
             erroneos = updateClients(settings.FILE_CLIENTES)
             if (erroneos):
                 msj = ", ".join(str(val) for val in erroneos)

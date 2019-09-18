@@ -12,21 +12,24 @@ from apps.cotizaciones.models import LineaOferta
 ##customs process
 
 def updateClients(fileRoot="../update_clients/clientes.csv"):
-	
+	#print(fileRoot)
 	fileRoot = re.sub(r'\\','/',fileRoot)
 	erroneos = []
 	with open(fileRoot) as ClientsFile:
 
-		registros = csv.DictReader(ClientsFile, delimiter=';')
+		registros = csv.DictReader(ClientsFile, delimiter='\t')
+		print(registros)
 
 		for registro in registros:
+			print(registro)
 			values = {
-				'idSage': int(re.sub(r'\.','',registro['Id de empresa'])),
+				'idSage': int(re.sub(r'[\.\,]','',registro['Id de empresa'])),
 				'nombre': registro['Nombre de la empresa'].title(),
 				'mantenimientos': re.sub(r'\,$','',registro['Mantenimientos'].title()).split(", "),
 				'vencim': datetime.strptime(registro['Fecha vencimiento del Mantenimiento'], "%d/%m/%Y") if registro['Fecha vencimiento del Mantenimiento'] else datetime.now().replace(month=12, day=31),
 				'comercial': registro['Gestor de cuentas']
 			}
+			print (values)
 			
 			comerc = None
 			mantenim = []
@@ -35,7 +38,7 @@ def updateClients(fileRoot="../update_clients/clientes.csv"):
 				for item in Contrato.objects.filter(cobertura=mant):
 					mantenim.append(item) if item else None
 
-			#Busco al cliente. Si no lo encuentro, lo creo vacío
+			#Busco al comercial. Si no lo encuentro, sumo al msg de error y paso al siguiente registro. (NO se importa el cliente)
 			try:
 				comerc = Comercial.objects.get(nombre_apellido=values['comercial']) if values['comercial'] else None
 			except:
@@ -43,6 +46,7 @@ def updateClients(fileRoot="../update_clients/clientes.csv"):
 				erroneos.append(values['nombre'])
 				continue
 
+			#Busco al cliente. Si no lo encuentro, lo creo vacío
 			try:
 				cliente = Cliente.objects.get(id_sage=values['idSage'])
 			except:

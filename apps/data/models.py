@@ -48,13 +48,13 @@ class Cliente(models.Model):
     #tipo_moneda = models.ForeignKey("Tipo de moneda", Moneda, default=1, on_delete=models.SET_NULL)
     moneda = models.ForeignKey(Moneda, null=True, blank=True, default=1, on_delete=models.SET_NULL)
 
-    def mantenim_activo(self):
-        activo = True if self.sla and self.vencimiento_sla > datetime.now().date() else False
-        return activo
-
     def get_sla(self):
         return ", ".join([cl.cobertura for cl in self.sla.all()])
     get_sla.short_description = "Servicios"
+
+    def mantenim_activo(self):
+        return True if self.get_sla() and self.vencimiento_sla > datetime.now().date() else False
+        #return activo
 
     mantenim_activo.boolean = True
     mantenim_activo.short_description = "Mantenimiento Activo?"
