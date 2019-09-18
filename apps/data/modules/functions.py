@@ -468,12 +468,13 @@ def crea_excel_oferta(queryset):
 				row += 1
 				desc_total = False
 				if "TOTAL" in descuentos:
-					imp_linea_total(book, sheet, row, col, obj.moneda.codigo, initialRow, monto=obj.get_categoria_sin_descuento(k) - obj.get_costo_categoria(k), grupo=f'{k} ({v}% OFF)', descuento=True)
+					imp_linea_total(book, sheet, row, col, obj.moneda.codigo, initialRow, monto=obj.get_categoria_sin_descuento("TOTAL") - obj.get_costo_categoria("TOTAL"), grupo=f'{"TOTAL"} ({descuentos.get("TOTAL")}% OFF)', descuento=True)
 					row += 1
 				else:
 					for k,v in descuentos.items():
-						imp_linea_total(book, sheet, row, col, obj.moneda.codigo, initialRow, monto=obj.get_categoria_sin_descuento(k) - obj.get_costo_categoria(k), grupo=f'{k} ({v}% OFF)', descuento=True)
-						row += 1
+						if obj.existe_categoria(k):
+							imp_linea_total(book, sheet, row, col, obj.moneda.codigo, initialRow, monto=obj.get_categoria_sin_descuento(k) - obj.get_costo_categoria(k), grupo=f'{k} ({v}% OFF)', descuento=True)
+							row += 1
 					
 			if descuentos:
 				imp_linea_total(book, sheet, row, col, obj.moneda.codigo, initialRow, monto=obj.get_total_descuentos(), grupo=f'.....................TOTAL BONIFICADO', descuento=True)

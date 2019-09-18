@@ -22,7 +22,7 @@ class Grupo(models.Model):
 class Producto(models.Model):
 
     codigo = models.CharField(max_length=20, unique=True)
-    costo = models.DecimalField(default=0, max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))], help_text='')
+    costo = models.DecimalField("Precio", default=0, max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))], help_text='')
     activo = models.BooleanField(default=True)
 
     categoria = models.ForeignKey(Categoria, null=True, blank=True, on_delete=models.SET_NULL)
@@ -69,6 +69,9 @@ class Oferta(models.Model):
     oc_autorizacion = models.FileField("OC - Aprobacion", null=True, blank=True, upload_to='oc_autoriz/ofertas/', help_text="Se agrega al obtener la OC o aprobación del cliente.")
     facturado = models.BooleanField(default=False)
 
+    def existe_categoria(self, categ):
+        return True if LineaOferta.objects.filter(Q(oferta=self.id) & Q(producto__categoria__nombre=categ)) else False
+        
     def costo_sin_descuento(self):
         '''Costo total de la oferta sin aplicar descuentos'''
         lineas = LineaOferta.objects.filter(oferta=self.id)
@@ -77,7 +80,7 @@ class Oferta(models.Model):
             
         valorFinal = 0
         for val in lineas:
-            valorFinal += val.costo_custom * val.cantidad if val.costo_custom else val.producto.costo * val.cantidad
+            valorFinal += val.costo_custom * val.cantidad * self.tasa_cambio if val.costo_custom else val.producto.costo * val.cantidad * self.tasa_cambio
         return round(valorFinal,2)
     costo_sin_descuento.short_description = "Costo Sin Descuento"
 
@@ -133,11 +136,9 @@ class Oferta(models.Model):
         return round(val,2)
     get_total_descuentos.short_description = "Total descuentos"
 
-    
-
     def costo_total(self):
         '''Costo total de la oferta, incluyendo descuentos.'''
-        total_sd = self.costo_sin_descuento() * self.tasa_cambio
+        total_sd = self.costo_sin_descuento()
         #return "%.02f" % (total_sd - self.get_total_descuentos())
         return round(total_sd - self.get_total_descuentos(),2)
     costo_total.short_description = "Costo Total"
