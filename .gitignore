@@ -5,3 +5,5 @@ db.sqlite3
 static/*
 update_clients/*
 .DS_Store
+*/migrations/*
+!*/migrations/__init__.py
