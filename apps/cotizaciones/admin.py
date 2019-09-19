@@ -3,6 +3,7 @@ from apps.cotizaciones.models import Grupo, Producto, Oferta, LineaOferta, Descu
 from apps.data.modules.functions import crea_excel_oferta, import_products
 from django.contrib import messages
 from django.conf import settings
+from dynamic_raw_id.admin import DynamicRawIDMixin
 
 #from django.core.exceptions import ValidationError
 #from django import forms
@@ -41,12 +42,13 @@ class ProductoAdmin(admin.ModelAdmin):
         #return import_products()
     importar_productos.short_description = "Importar desde CSV"
 
-class ItemsInLine(admin.StackedInline):
+class ItemsInLine(DynamicRawIDMixin, admin.StackedInline):
     model = LineaOferta
     extra = 1
     ordering = ("producto__codigo",)
-    #raw_id_fields = ("repuesto",)
-    autocomplete_fields = ["producto"]
+    #raw_id_fields = ("producto",)
+    #autocomplete_fields = ["producto"]
+    dynamic_raw_id_fields = ('producto',)
 
 class DescuentoAdmin(admin.ModelAdmin):
     search_fields = ["descuento", "categoria__nombre"]
@@ -58,6 +60,7 @@ class DescuentosInLine(admin.StackedInline):
     extra = 0
     ordering = ("descuento",)
     autocomplete_fields = ["categoria"]
+
 
 class OfertaAdmin(admin.ModelAdmin):
     #form = OfertaForm

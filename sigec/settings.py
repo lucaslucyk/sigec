@@ -1,9 +1,9 @@
 import os
 
-VERSION = "1.3.4"
+VERSION = "1.5.1"
 '''
     VERSION:    1   - INICIAL
-    RELEASE:    4   - IMPORTACION DE PRODUCTOS
+    RELEASE:    5   - RAW ID PLUGIN
     FIX:        1   - DELETE OLD TEMPLATES
 '''
 
@@ -36,6 +36,9 @@ INSTALLED_APPS = [
     'apps.data',
     'apps.cotizaciones',
     'apps.reparaciones',
+
+    # ... other apps
+    'dynamic_raw_id',
 ]
 
 MIDDLEWARE = [

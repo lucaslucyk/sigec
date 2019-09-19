@@ -21,7 +21,7 @@ class Grupo(models.Model):
 
 class Producto(models.Model):
 
-    codigo = models.CharField(max_length=20, unique=True)
+    codigo = models.CharField(max_length=50, unique=True)
     costo = models.DecimalField("Precio", default=0, max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))], help_text='')
     activo = models.BooleanField(default=True)
 
@@ -48,7 +48,7 @@ class Producto(models.Model):
     get_sw_compatible.short_description = "Software compatible"
 
     def get_short_descrip(self):
-        return "{}{}".format(self.descripcion[:50], "..." if len(self.descripcion)>50 else "")
+        return "{}{}".format(self.descripcion[:100], "..." if len(self.descripcion)>100 else "")
     get_short_descrip.short_description = "Descripcion"
 
     def __str__(self):
