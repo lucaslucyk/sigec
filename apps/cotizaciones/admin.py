@@ -1,6 +1,8 @@
 from django.contrib import admin
 from apps.cotizaciones.models import Grupo, Producto, Oferta, LineaOferta, Descuento
-from apps.data.modules.functions import crea_excel_oferta
+from apps.data.modules.functions import crea_excel_oferta, import_products
+from django.contrib import messages
+from django.conf import settings
 
 #from django.core.exceptions import ValidationError
 #from django import forms
@@ -21,6 +23,23 @@ class ProductoAdmin(admin.ModelAdmin):
     autocomplete_fields = ["software_compatible", "categoria", "grupo"]
     save_as = True
     save_on_top = True
+
+    actions = ["importar_productos"]
+
+    def importar_productos(self, request, queryset):
+        try:
+            erroneos = import_products(settings.FILE_PRODUCTOS)
+            if (erroneos):
+                msj = ", ".join(str(val) for val in erroneos)
+                messages.add_message(request, messages.WARNING, 'Error al importar los productos {}'.format(msj))
+            else:
+                messages.add_message(request, messages.SUCCESS, 'Productos importados correctamente!')
+
+        except Exception as err:
+            messages.add_message(request, messages.ERROR, 'ERROR importando productos. {}'.format(err))
+        return
+        #return import_products()
+    importar_productos.short_description = "Importar desde CSV"
 
 class ItemsInLine(admin.StackedInline):
     model = LineaOferta
@@ -65,7 +84,7 @@ class OfertaAdmin(admin.ModelAdmin):
     actions = ["crea_excel"]
 
     def crea_excel(self, request, queryset):
-            return crea_excel_oferta(queryset)
+        return crea_excel_oferta(queryset)
     crea_excel.short_description = "Generar Excel"
 
     # def save_model(self, request, obj, form, change):

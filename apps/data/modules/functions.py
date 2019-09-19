@@ -3,10 +3,11 @@ from datetime import datetime
 from django.http import HttpResponse
 from xlsxwriter import Workbook
 from django.conf import settings
-from apps.data.models import Contrato, Cliente, Comercial
+from apps.data.models import Contrato, Cliente, Comercial, Categoria, Software
 from apps.data.modules.constantes import FORMATOS, CONDIC_PRESUP, CONDIC_OFERTAS
 from apps.reparaciones.models import LineaPresupuesto
-from apps.cotizaciones.models import LineaOferta
+from apps.cotizaciones.models import LineaOferta, Producto, Grupo
+from decimal import Decimal
 #import openpyxl
 
 ##customs process
@@ -496,3 +497,70 @@ def crea_excel_oferta(queryset):
 
 	book.close()
 	return response
+
+def crea_grupo_producto(nombre):
+	grupo = Grupo.objects.filter(nombre=nombre)
+	
+	if not grupo:
+		grupo = Grupo()
+		grupo.nombre = nombre
+		grupo.save()
+
+	return grupo
+
+def crea_categoria_producto(nombre):
+	categoria = Categoria.objects.filter(nombre=nombre)
+	if not categoria:
+		categoria = Categoria()
+		categoria.nombre = nombre
+		categoria.save()
+	return categoria
+
+def import_products(fileRoot="../import/productos.csv"):
+	#print(fileRoot)
+	fileRoot = re.sub(r'\\','/',fileRoot)
+	erroneos = []
+	with open(fileRoot) as ProductsFile:
+
+		registros = csv.DictReader(ProductsFile, delimiter=';')
+		#print(registros)
+
+		for registro in registros:
+			#print(registro)
+			values = {
+				'codigo': registro['CODIGO'],
+				'costo': Decimal(registro['PRECIO']),
+				'activo': True,
+				'descripcion': registro['DESCRIPCION'],
+			}
+
+			_categoria = Categoria.objects.filter(nombre=registro['CATEGORIA'])
+			_grupo = Grupo.objects.filter(nombre=registro['GRUPO'])
+
+			values['categoria'] = _categoria[0] if _categoria else crea_categoria_producto(registro['CATEGORIA'])
+			values['grupo'] = _grupo[0] if _grupo else crea_grupo_producto(registro['GRUPO'])
+
+			_soft_compatibles = []
+			for software in registro['SOFTWARE'].split(","):
+				_soft = Software.objects.filter(nombre=software)
+				_soft_compatibles.append(_soft[0]) if _soft else None
+
+			#Busco al cliente. Si no lo encuentro, lo creo vacío
+			try:
+				producto = Producto.objects.get(codigo=values.get('codigo'))
+			except:
+				producto = Producto()
+
+			for k,v in values.items():
+				setattr(producto, k, v)
+
+			#Intento guardar. Si no es posible, informo error
+			try:
+				producto.save()
+				producto.software_compatible.set(_soft_compatibles)
+				producto.save()
+			except:
+				if (values['codigo'] not in erroneos):
+					erroneos.append(values['codigo'])
+		ProductsFile.close()
+	return (erroneos)

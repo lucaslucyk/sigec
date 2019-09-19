@@ -128,5 +128,6 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR),'media_uploads')
 
 MONEDA_DEFAULT = 'U$D'
-FILE_CLIENTES = "{}\\update_clients\\clientes.csv".format(BASE_DIR)
+FILE_CLIENTES = "{}\\import\\clientes.csv".format(BASE_DIR)
+FILE_PRODUCTOS = "{}\\import\\productos.csv".format(BASE_DIR)
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
