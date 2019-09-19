@@ -3,8 +3,8 @@ import os
 VERSION = "1.3.4"
 '''
     VERSION:    1   - INICIAL
-    RELEASE:    3   - DESCUENTOS VARIABLES
-    FIX:        3   - DELETE OLD TEMPLATES
+    RELEASE:    4   - IMPORTACION DE PRODUCTOS
+    FIX:        1   - DELETE OLD TEMPLATES
 '''
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
