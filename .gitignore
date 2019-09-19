@@ -3,7 +3,7 @@
 __pycache__/
 db.sqlite3
 static/*
-update_clients/*
+import/*
 .DS_Store
 !apps/cotizaciones/migrations/
 !apps/data/migrations/
