@@ -61,7 +61,7 @@ class ClienteAdmin(admin.ModelAdmin):
             pass
         return
 
-    update_clients.short_description = "Importar clientes"
+    update_clients.short_description = "Importar desde CSV"
 
 class CategoriaAdmin(admin.ModelAdmin):
     list_display = ("nombre",)

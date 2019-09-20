@@ -348,7 +348,7 @@ def crea_excel_oferta(queryset):
 	#queryset = queryset[0]
 	for obj in queryset[:1]:
 		
-		_fileName = "OFE{}_v4_{}.xlsx".format(obj.id, re.sub(' ', '', obj.cliente.nombre.title()))
+		_fileName = "SIGEC_OFE0{}_{}.xlsx".format(obj.id, re.sub(' ', '', obj.cliente.nombre.title()))
 
 		response = HttpResponse(content_type='application/application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', charset='iso-8859-1')
 		response['Content-Disposition'] = f'attachment; filename={_fileName}'

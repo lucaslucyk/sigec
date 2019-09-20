@@ -52,7 +52,7 @@ class Producto(models.Model):
     get_short_descrip.short_description = "Descripcion"
 
     def __str__(self):
-        return "{} | {}{}".format(self.codigo, self.descripcion[:50], "..." if len(self.descripcion)>50 else "")
+        return "{} | {}{}".format(self.codigo, self.descripcion[:100], "..." if len(self.descripcion)>100 else "")
 
     class Meta:
         verbose_name = "Producto"
@@ -177,7 +177,7 @@ class LineaOferta(models.Model):
     link_oferta.short_description = "Presupuesto"
 
     def __str__(self):
-        return "%s x %s"%(self.cantidad, self.producto)
+        return f'PDV: {self.producto.costo} | {self.cantidad} x {self.producto}'
 
     class Meta:
         verbose_name = 'Producto ofertado'

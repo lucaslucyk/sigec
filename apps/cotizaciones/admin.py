@@ -47,8 +47,8 @@ class ItemsInLine(DynamicRawIDMixin, admin.StackedInline):
     extra = 1
     ordering = ("producto__codigo",)
     #raw_id_fields = ("producto",)
-    #autocomplete_fields = ["producto"]
-    dynamic_raw_id_fields = ('producto',)
+    autocomplete_fields = ["producto"]
+    #dynamic_raw_id_fields = ('producto',)
 
 class DescuentoAdmin(admin.ModelAdmin):
     search_fields = ["descuento", "categoria__nombre"]
