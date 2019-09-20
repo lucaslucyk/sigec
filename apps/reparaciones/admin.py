@@ -24,10 +24,11 @@ class RepuestoAdmin(admin.ModelAdmin):
     ordering = ('familia','nombre')
     list_display_links = ["codigo", "nombre"]
     autocomplete_fields = ["familia"]
-    actions = ["exportar_a_csv"]
+    actions = ["export_as_csv"]
 
-    def exportar_a_csv(self, request, queryset):
+    def export_as_csv(self, request, queryset):
         return export_to_csv(self, queryset)
+    export_as_csv.short_description = "Exportar a CSV"
 
 class ItemsInLine(admin.StackedInline):
     model = LineaPresupuesto
