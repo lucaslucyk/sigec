@@ -12,6 +12,25 @@ from decimal import Decimal
 
 ##customs process
 
+def export_to_csv(self, queryset, *args):
+	
+    meta = self.model._meta
+    field_names = [field.name for field in meta.fields]
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename={}.csv'.format(meta)
+    writer = csv.writer(response)
+
+    writer.writerow(field_names)
+    
+    for obj in queryset:
+        row = writer.writerow([getattr(obj, field) for field in field_names])
+
+    for arg in args:
+    	row = writer.writerow([getattr(arg, field) for field in field_names])
+
+    return response
+
 def updateClients(fileRoot="../update_clients/clientes.csv"):
 	#print(fileRoot)
 	fileRoot = re.sub(r'\\','/',fileRoot)

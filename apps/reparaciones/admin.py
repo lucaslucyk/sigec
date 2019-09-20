@@ -3,7 +3,7 @@ from apps.reparaciones.models import FamiliaRepuesto, Repuesto, Presupuesto, Lin
 from django.http import HttpResponse
 import csv#, openpyxl
 from django.conf import settings
-from apps.data.modules.functions import crea_excel_presupuesto
+from apps.data.modules.functions import crea_excel_presupuesto, export_to_csv
 #import re
 #from django.contrib import messages
 #from django.urls import reverse
@@ -24,6 +24,10 @@ class RepuestoAdmin(admin.ModelAdmin):
     ordering = ('familia','nombre')
     list_display_links = ["codigo", "nombre"]
     autocomplete_fields = ["familia"]
+    actions = ["exportar_a_csv"]
+
+    def exportar_a_csv(self, request, queryset):
+        return export_to_csv(self, queryset)
 
 class ItemsInLine(admin.StackedInline):
     model = LineaPresupuesto
