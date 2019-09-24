@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.utils.safestring import mark_safe
 from django.urls import reverse
 from apps.data.models import Cliente, Moneda, Categoria, Software
+from apps.data.modules.constantes import CONDIC_OFERTAS
 from django.core.validators import MaxValueValidator, MinValueValidator
 from decimal import Decimal
 from django.db.models import Q
@@ -195,3 +196,20 @@ class Descuento(models.Model):
     class Meta:
         verbose_name = 'Descuento'
         verbose_name_plural = 'Descuentos'
+
+class Condiciones_Custom(models.Model):
+    oferta = models.ForeignKey(Oferta, null=True, blank=False, on_delete=models.CASCADE)
+
+    validez_de_la_oferta = models.TextField(blank=False, default=CONDIC_OFERTAS[1].get('contenido'))
+    forma_de_pago = models.TextField(blank=False, default=CONDIC_OFERTAS[3].get('contenido'))
+    garantia = models.TextField(blank=False, default=CONDIC_OFERTAS[5].get('contenido'))
+    precios = models.TextField(blank=False, default=CONDIC_OFERTAS[7].get('contenido'))
+    instalacion = models.TextField(blank=False, default=CONDIC_OFERTAS[9].get('contenido'))
+    facturacion = models.TextField(blank=False, default=CONDIC_OFERTAS[11].get('contenido'))
+
+    def __str__(self):
+        return f'{self.oferta.asunto}'
+
+    class Meta:
+        verbose_name = 'Condición Personalizada'
+        verbose_name_plural = 'Condiciones Personalizadas'

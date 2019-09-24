@@ -6,7 +6,7 @@ from django.conf import settings
 from apps.data.models import Contrato, Cliente, Comercial, Categoria, Software
 from apps.data.modules.constantes import FORMATOS, CONDIC_PRESUP, CONDIC_OFERTAS
 from apps.reparaciones.models import LineaPresupuesto
-from apps.cotizaciones.models import LineaOferta, Producto, Grupo
+from apps.cotizaciones.models import LineaOferta, Producto, Grupo, Condiciones_Custom
 from decimal import Decimal
 #import openpyxl
 
@@ -234,7 +234,7 @@ def imp_linea_categoria(book, sheet, row, col, grupo=""):
 	sheet.write(row, col+6, "", book.add_format(dict(**FORMATOS.get("item_SB"), **FORMATOS.get("bg_gris"))))
 	sheet.write(row, col+7, "", book.add_format(dict(**FORMATOS.get("item_BD"), **FORMATOS.get("bg_gris"))))
 
-def imp_condiciones(book, sheet, row, col, tipo="presupuesto"):
+def imp_condiciones(book, sheet, row, col, tipo="presupuesto", condiciones_custom=None):
 	'''
 		Imprime las condiciones comerciales.
 	'''
@@ -245,6 +245,14 @@ def imp_condiciones(book, sheet, row, col, tipo="presupuesto"):
 	row += 1
 
 	condic_to_print = CONDIC_PRESUP if tipo == "presupuesto" else CONDIC_OFERTAS
+	
+	if condiciones_custom:
+		condic_to_print[1]['contenido'] = re.sub(r'\r', '', condiciones_custom.validez_de_la_oferta)
+		condic_to_print[3]['contenido'] = re.sub(r'\r', '', condiciones_custom.forma_de_pago)
+		condic_to_print[5]['contenido'] = re.sub(r'\r', '', condiciones_custom.garantia)
+		condic_to_print[7]['contenido'] = re.sub(r'\r', '', condiciones_custom.precios)
+		condic_to_print[9]['contenido'] = re.sub(r'\r', '', condiciones_custom.instalacion)
+		condic_to_print[11]['contenido'] = re.sub(r'\r', '', condiciones_custom.facturacion)
 
 	for condicion in condic_to_print:
 
@@ -512,7 +520,9 @@ def crea_excel_oferta(queryset):
 	################# CONDICIONES COMERCIALES #################
 	row += 2
 	col = 2
-	imp_condiciones(book, sheet, row, col, tipo="oferta")
+
+	condic_custom = Condiciones_Custom.objects.filter(oferta=obj.id)
+	imp_condiciones(book, sheet, row, col, tipo="oferta", condiciones_custom=condic_custom[0] if condic_custom else None)
 
 	book.close()
 	return response

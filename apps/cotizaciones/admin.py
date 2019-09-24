@@ -1,5 +1,5 @@
 from django.contrib import admin
-from apps.cotizaciones.models import Grupo, Producto, Oferta, LineaOferta, Descuento
+from apps.cotizaciones.models import Grupo, Producto, Oferta, LineaOferta, Descuento, Condiciones_Custom
 from apps.data.modules.functions import crea_excel_oferta, import_products
 from django.contrib import messages
 from django.conf import settings
@@ -60,19 +60,39 @@ class DescuentosInLine(admin.StackedInline):
     extra = 0
     ordering = ("descuento",)
     autocomplete_fields = ["categoria"]
-
+'''
+class CondicionesAdmin(admin.ModelAdmin):
+    fieldsets = (
+        (None, {
+            'fields': None
+        }),
+        ('Editar condiciones', {
+            'classes': ('collapse',),
+            'fields': ('validez_de_la_oferta','forma_de_pago', 'garantia', 'precios', 'instalacion', 'facturacion'),
+        }),
+    )
+'''
+class CondicionesInLine(admin.StackedInline):
+    model = Condiciones_Custom
+    extra = 0
+    fieldsets = (
+        ('Editar condiciones', {
+            'classes': ('collapse',),
+            'fields': ('validez_de_la_oferta','forma_de_pago', 'garantia', 'precios', 'instalacion', 'facturacion'),
+        }),
+    )
 
 class OfertaAdmin(admin.ModelAdmin):
     #form = OfertaForm
 
-    inlines = [DescuentosInLine, ItemsInLine]
+    inlines = [CondicionesInLine, DescuentosInLine, ItemsInLine]
 
     list_display = ("id", "asunto", "fecha","cliente","moneda","tasa_cambio","costo_total")#, "facturado", "fileLink", "usuario")
     readonly_fields = ['fileLink']
     list_filter = ["moneda", "facturado", "usuario"]
     search_fields = ['cliente__nombre', "asunto", "id", "usuario__first_name", "usuario__last_name", "usuario__username", "moneda__codigo", "moneda__nombre" ]
     list_display_links = ["id", "asunto"]
-    fields = ( "asunto", "cliente", "moneda", "tasa_cambio", "facturado", "oc_autorizacion")
+    #fields = ( "asunto", "cliente", "moneda", "tasa_cambio", "facturado", "oc_autorizacion")
     #list_editable =["facturado"]
     #ordering = ("id",'asunto')
     #raw_id_fields = ("cliente",)
@@ -83,6 +103,16 @@ class OfertaAdmin(admin.ModelAdmin):
     save_as = True
     save_on_top = True
     #change_list_template = 'presup_change_list.html'
+
+    fieldsets = (
+        (None, {
+            'fields': ('asunto', 'cliente', 'moneda', 'tasa_cambio',)
+        }),
+        ('Facturación', {
+            'classes': ('collapse',),
+            'fields': ('facturado', 'oc_autorizacion',),
+        }),
+    )
 
     actions = ["crea_excel"]
 

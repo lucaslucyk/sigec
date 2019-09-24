@@ -1,10 +1,10 @@
 import os
 
-VERSION = "1.5.1"
+VERSION = "1.6.1"
 '''
     VERSION:    1   - INICIAL
-    RELEASE:    5   - RAW ID PLUGIN
-    FIX:        1   - DELETE OLD TEMPLATES
+    RELEASE:    5   - CONDICIONES COMERCIALES PERSONALIZADAS
+    FIX:        1   - NUEVA FUNCIONALIDAD
 '''
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
