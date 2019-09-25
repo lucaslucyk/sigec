@@ -23,7 +23,7 @@ class Grupo(models.Model):
 class Producto(models.Model):
 
     codigo = models.CharField(max_length=50, unique=True)
-    costo = models.DecimalField("Precio", default=0, max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))], help_text='')
+    costo = models.DecimalField("Precio", default=0, max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('0.00'))], help_text='')
     activo = models.BooleanField(default=True)
 
     categoria = models.ForeignKey(Categoria, null=True, blank=True, on_delete=models.SET_NULL)
