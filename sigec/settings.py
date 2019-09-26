@@ -1,10 +1,10 @@
 import os
 
-VERSION = "1.6.1"
+VERSION = "1.7.1"
 '''
     VERSION:    1   - INICIAL
-    RELEASE:    5   - CONDICIONES COMERCIALES PERSONALIZADAS
-    FIX:        1   - NUEVA FUNCIONALIDAD
+    RELEASE:    7   - JS GRAHS EN OFERTAS
+    FIX:        1   - ASIGNACION DE USUARIO AL GUARDAR UNA OFERTA
 '''
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
