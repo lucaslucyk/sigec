@@ -5,6 +5,13 @@ from django.contrib import messages
 from django.conf import settings
 from dynamic_raw_id.admin import DynamicRawIDMixin
 
+import json
+from django.core.serializers.json import DjangoJSONEncoder
+from django.db.models import Count
+from django.db.models.functions import TruncDay
+from django.http import JsonResponse
+from django.urls import path
+
 #from django.core.exceptions import ValidationError
 #from django import forms
 
@@ -60,18 +67,7 @@ class DescuentosInLine(admin.StackedInline):
     extra = 0
     ordering = ("descuento",)
     autocomplete_fields = ["categoria"]
-'''
-class CondicionesAdmin(admin.ModelAdmin):
-    fieldsets = (
-        (None, {
-            'fields': None
-        }),
-        ('Editar condiciones', {
-            'classes': ('collapse',),
-            'fields': ('validez_de_la_oferta','forma_de_pago', 'garantia', 'precios', 'instalacion', 'facturacion'),
-        }),
-    )
-'''
+
 class CondicionesInLine(admin.StackedInline):
     model = Condiciones_Custom
     extra = 0
@@ -102,7 +98,7 @@ class OfertaAdmin(admin.ModelAdmin):
 
     save_as = True
     save_on_top = True
-    #change_list_template = 'presup_change_list.html'
+    change_list_template = 'ofertas_change_list.html'
 
     fieldsets = (
         (None, {
@@ -120,10 +116,42 @@ class OfertaAdmin(admin.ModelAdmin):
         return crea_excel_oferta(queryset)
     crea_excel.short_description = "Generar Excel"
 
-    # def save_model(self, request, obj, form, change):
-    #     if obj.tasa_cambio < 1:
-    #         raise ValidationError("La tasa de cambio de menor a 1.")
-    #     obj.save()
+    def changelist_view(self, request, extra_context=None):
+        # Aggregate new subscribers per day
+        chart_data = self.chart_data()
+        as_json = json.dumps(list(chart_data), cls=DjangoJSONEncoder)
+        extra_context = extra_context or {"chart_data": as_json}
+        # Call the superclass changelist_view to render the page
+        return super().changelist_view(request, extra_context=extra_context)
+
+    def get_urls(self):
+        urls = super().get_urls()
+        extra_urls = [
+            path("chart_data/", self.admin_site.admin_view(self.chart_data_endpoint))
+        ]
+        # NOTE! Our custom urls have to go before the default urls, because they
+        # default ones match anything.
+        return extra_urls + urls
+
+    # JSON endpoint for generating chart data that is used for dynamic loading
+    # via JS.
+    def chart_data_endpoint(self, request):
+        chart_data = self.chart_data()
+        return JsonResponse(list(chart_data), safe=False)
+
+    def chart_data(self):
+        return (
+            Oferta.objects.annotate(date=TruncDay("fecha"))
+            .values("date")
+            .annotate(y=Count("id"))
+            .order_by("-date")
+        )
+        
+    def save_model(self, request, obj, form, change):
+        obj.usuario = request.user
+        #if obj.tasa_cambio < 1:
+        #raise ValidationError("La tasa de cambio de menor a 1.")
+        obj.save()
 
 class LineaAdmin(admin.ModelAdmin):
 

@@ -20,6 +20,7 @@ from django.conf import settings
 
 urlpatterns = [
     path('', admin.site.urls),
+    #path('admin/', admin.site.urls),
     re_path(r'^admin/dynamic_raw_id/', include('dynamic_raw_id.urls')),
 ]
 
