@@ -1,7 +1,7 @@
 import os
 #from datetime import datetime
 
-VERSION = "1.7.1"
+VERSION = "1.7.2"
 '''
     VERSION:    1   - INICIAL
     RELEASE:    7   - JS GRAHS EN OFERTAS
