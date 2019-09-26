@@ -30,10 +30,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Sample data
   const chartData = {{ chart_data | safe }};
+  console.log(chartData);
 
   // Parse the dates to JS
   chartData.forEach((d) => {
     d.x = new Date(d.date);
+    //upd por time_zone
+    d.x.setDate(d.x.getDate() + 1);
   });
 
   // Render the chart
