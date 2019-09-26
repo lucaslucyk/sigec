@@ -1,10 +1,11 @@
 import os
+#from datetime import datetime
 
 VERSION = "1.7.1"
 '''
     VERSION:    1   - INICIAL
     RELEASE:    7   - JS GRAHS EN OFERTAS
-    FIX:        1   - ASIGNACION DE USUARIO AL GUARDAR UNA OFERTA
+    FIX:        2   - FIX CONSOLE.LOG ON OFERTAS
 '''
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
 
     # ... other apps
     'dynamic_raw_id',
+    #'admin_footer',    #django-admin-footer
 ]
 
 MIDDLEWARE = [
@@ -71,6 +73,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'sigec.wsgi.application'
 
+# ADMIN_FOOTER_DATA = {
+#   'site_url': 'http://sv-pruebas/sigec',
+#   'site_name': 'SIGeC',
+#   'period': '{}'.format(datetime.now().year),
+#   'version': 'v{} - '.format(VERSION)
+# }
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases

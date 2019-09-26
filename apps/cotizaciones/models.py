@@ -168,7 +168,7 @@ class LineaOferta(models.Model):
     oferta = models.ForeignKey(Oferta, null=True, blank=False, on_delete=models.CASCADE)
     producto = models.ForeignKey(Producto, null=False, blank=False, on_delete=models.CASCADE)
     cantidad = models.PositiveIntegerField(default=1)
-    costo_custom = models.DecimalField(default=0, max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('0.00'))], help_text='')
+    costo_custom = models.DecimalField("Precio Personalizado", default=0, max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('0.00'))], help_text='')
 
     @mark_safe
     def link_oferta(self):

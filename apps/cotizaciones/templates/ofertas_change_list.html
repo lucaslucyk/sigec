@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Sample data
   const chartData = {{ chart_data | safe }};
-  console.log(chartData);
+  //console.log(chartData);
 
   // Parse the dates to JS
   chartData.forEach((d) => {
@@ -98,6 +98,8 @@ document.addEventListener('DOMContentLoaded', () => {
   <canvas style="margin-bottom: 30px; width: 60%; height: 50%;" id="myChart"></canvas>
 </div>
 <button id="reload">Actualizar gráfico</button>
+
 <!-- Render the rest of the ChangeList view -->
 {{ block.super }}
+
 {% endblock %}
