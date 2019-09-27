@@ -571,7 +571,7 @@ def import_products(fileRoot="../import/productos.csv"):
 
 			_soft_compatibles = []
 			for software in registro['SOFTWARE'].split(","):
-				_soft = Software.objects.filter(nombre=re.sub(r'^\ ', '', software))
+				_soft = Software.objects.filter(nombre=re.sub(r'^[\ ]*', '', software))
 				_soft_compatibles.append(_soft[0]) if _soft else None
 
 			#Busco al cliente. Si no lo encuentro, lo creo vacío
