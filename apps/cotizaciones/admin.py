@@ -146,6 +146,15 @@ class OfertaAdmin(admin.ModelAdmin):
             .annotate(y=Count("id"))
             .order_by("-date")
         )
+
+        # para agrupar por mes
+        # return (
+        #     Oferta.objects.annotate(date=TruncMonth("fecha"))
+        #     .values("date")
+        #     .annotate(y=Count("id"))
+        #     .order_by("-date")
+        # )
+        
         
     def save_model(self, request, obj, form, change):
         obj.usuario = request.user

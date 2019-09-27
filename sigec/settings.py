@@ -1,11 +1,11 @@
 import os
 #from datetime import datetime
 
-VERSION = "1.7.2"
+VERSION = "1.7.3"
 '''
     VERSION:    1   - INICIAL
     RELEASE:    7   - JS GRAHS EN OFERTAS
-    FIX:        2   - FIX CONSOLE.LOG ON OFERTAS
+    FIX:        3   - COMMENT FOR DISPLAY BY MONTH
 '''
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
