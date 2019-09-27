@@ -36,10 +36,11 @@ class Producto(models.Model):
 
     @mark_safe
     def img_display(self):
+        _style = 'display: block; margin-left: auto; margin-right: auto; width: auto; max-width: 100%; height: auto; max-height:42px'
         if self.imagen:
-            return mark_safe(f'<img src="{self.imagen.url}" alt="Imagen {self.codigo}" height="42" width="42" />')
+            return mark_safe(f'<img src="{self.imagen.url}" alt="Imagen {self.codigo}" style="{_style}" />')
         elif self.grupo.imagen:
-            return mark_safe(f'<img src="{self.grupo.imagen.url}" alt="Imagen {self.grupo.nombre}" height="42" width="42" />')
+            return mark_safe(f'<img src="{self.grupo.imagen.url}" alt="Imagen {self.grupo.nombre}" style="{_style}" />')
         else:
             return mark_safe('<a href="''"></a>')
     img_display.short_description = "Imagen"
