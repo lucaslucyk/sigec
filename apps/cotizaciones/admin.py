@@ -12,6 +12,8 @@ from django.db.models.functions import TruncDay
 from django.http import JsonResponse
 from django.urls import path
 
+from django.db.models import Q
+
 #from django.core.exceptions import ValidationError
 #from django import forms
 
@@ -31,6 +33,8 @@ class ProductoAdmin(admin.ModelAdmin):
     autocomplete_fields = ["software_compatible", "categoria", "grupo"]
     save_as = True
     save_on_top = True
+
+
 
     actions = ["importar_productos"]
 
@@ -118,7 +122,7 @@ class OfertaAdmin(admin.ModelAdmin):
 
     def changelist_view(self, request, extra_context=None):
         # Aggregate new subscribers per day
-        chart_data = self.chart_data()
+        chart_data = self.chart_data(qs_filter=request.GET)
         as_json = json.dumps(list(chart_data), cls=DjangoJSONEncoder)
         extra_context = extra_context or {"chart_data": as_json}
         # Call the superclass changelist_view to render the page
@@ -136,24 +140,40 @@ class OfertaAdmin(admin.ModelAdmin):
     # JSON endpoint for generating chart data that is used for dynamic loading
     # via JS.
     def chart_data_endpoint(self, request):
-        chart_data = self.chart_data()
+        chart_data = self.chart_data(qs_filter=request.GET) #Siempre da un QD vacio, para reiniciar el graph
         return JsonResponse(list(chart_data), safe=False)
 
-    def chart_data(self):
-        return (
+    def chart_data(self, qs_filter=None):
+        if not qs_filter:   #retorno todos los elementos por cualquier error de req
+            return (
             Oferta.objects.annotate(date=TruncDay("fecha"))
             .values("date")
             .annotate(y=Count("id"))
             .order_by("-date")
         )
 
-        # para agrupar por mes
-        # return (
-        #     Oferta.objects.annotate(date=TruncMonth("fecha"))
-        #     .values("date")
-        #     .annotate(y=Count("id"))
-        #     .order_by("-date")
-        # )
+        qs = Q()
+
+        #Condiciones para el campo de busqueda.
+        if "q" in qs_filter.keys():
+            search_fields = ['cliente__nombre', "asunto", "id", "usuario__first_name", "usuario__last_name", "usuario__username", "moneda__codigo", "moneda__nombre" ]
+            condic = {}
+            for f in search_fields:
+                condic[f'{f}__contains'] = qs_filter.get("q")
+            for key, value in condic.items():
+                qs.add(Q(**{key: value}), Q.OR)
+
+        #Condiciones de filtro
+        for k,v in qs_filter.dict().items():
+            if k is not "q":    #excluyo el campo de busqueda
+                qs.add(Q(**{k:v}), Q.AND)
+
+        return (
+            Oferta.objects.filter(qs).annotate(date=TruncDay("fecha"))
+            .values("date")
+            .annotate(y=Count("id"))
+            .order_by("-date")
+        )
         
         
     def save_model(self, request, obj, form, change):

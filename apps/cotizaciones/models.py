@@ -44,6 +44,7 @@ class Producto(models.Model):
         else:
             return mark_safe('<a href="''"></a>')
     img_display.short_description = "Imagen"
+    img_display.allow_tags = True
 
     def get_sw_compatible(self):
         return ", ".join([sw.nombre for sw in self.software_compatible.all()])

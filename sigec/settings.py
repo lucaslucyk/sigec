@@ -1,10 +1,10 @@
 import os
 #from datetime import datetime
 
-VERSION = "1.7.5"
+VERSION = "1.8.5"
 '''
     VERSION:    1   - INICIAL
-    RELEASE:    7   - JS GRAHS EN OFERTAS
+    RELEASE:    8   - GRAPHS OFERTAS VARIABLES CON QS
     FIX:        5   - FIX IMPORT VARIOUS SOFT
 '''
 
