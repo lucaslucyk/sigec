@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Reload chart data from the backend on button click
   const btn = document.querySelector('#reload');
   btn.addEventListener('click', async() => {
-    const res = await fetch("/cotizaciones/oferta/chart_data/");
+    const res = await fetch("/sigec/cotizaciones/oferta/chart_data/");
     const json = await res.json();
     json.forEach((d) => {
       d.x = new Date(d.date);
