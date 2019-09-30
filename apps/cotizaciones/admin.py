@@ -159,7 +159,7 @@ class OfertaAdmin(admin.ModelAdmin):
             search_fields = ['cliente__nombre', "asunto", "id", "usuario__first_name", "usuario__last_name", "usuario__username", "moneda__codigo", "moneda__nombre" ]
             condic = {}
             for f in search_fields:
-                condic[f'{f}__contains'] = qs_filter.get("q")
+                condic[f'{f}__icontains'] = qs_filter.get("q")
             for key, value in condic.items():
                 qs.add(Q(**{key: value}), Q.OR)
 
