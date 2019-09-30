@@ -19,9 +19,9 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 urlpatterns = [
+    re_path(r'^admin/dynamic_raw_id/', include('dynamic_raw_id.urls')),
     path('', admin.site.urls),
     #path('admin/', admin.site.urls),
-    re_path(r'^admin/dynamic_raw_id/', include('dynamic_raw_id.urls')),
 ]
 
 if settings.DEBUG:
