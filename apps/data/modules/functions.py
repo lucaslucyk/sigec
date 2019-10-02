@@ -298,73 +298,73 @@ def crea_excel_presupuesto(queryset):
 		#row = 0
 		row = imp_cabeceras(book, sheet, obj, "Soporte Grupo SPEC")
 
-	row += 2
-	col = 2
+		row += 2
+		col = 2
 
-	################# ASUNTO #################
-	sheet.merge_range(row, col, row, col+7, obj.asunto.upper(), book.add_format(FORMATOS.get("headerGrupos")) )
-	
-	row += 2
-	col = 2
+		################# ASUNTO #################
+		sheet.merge_range(row, col, row, col+7, obj.asunto.upper(), book.add_format(FORMATOS.get("headerGrupos")) )
+		
+		row += 2
+		col = 2
 
-	################# TITULOS COLUMNAS VACIA #################
-	#titulos de grupos
-	#valor y columnas que ocupa
-	var_columnas = (("CÓDIGO",1), ("CANTIDAD",1), ("DESCRIPCIÓN",1), ("PRECIO UNITARIO",2), ("TOTAL",3),)
+		################# TITULOS COLUMNAS VACIA #################
+		#titulos de grupos
+		#valor y columnas que ocupa
+		var_columnas = (("CÓDIGO",1), ("CANTIDAD",1), ("DESCRIPCIÓN",1), ("PRECIO UNITARIO",2), ("TOTAL",3),)
 
-	for var, posic in var_columnas:
-		if posic == 1:
-			#sheet.write(row, col, var, book.add_format(dict(**FORMATOS.get("center"), **FORMATOS.get("medio"))))
-			sheet.write(row, col, var, book.add_format(FORMATOS.get("headerGrupos")))
-		else:
-			#sheet.merge_range(row, col, row, col+posic-1, var, book.add_format(dict(**FORMATOS.get("center"), **FORMATOS.get("wrap"), **FORMATOS.get("medio"))))
-			sheet.merge_range(row, col, row, col+posic-1, var, book.add_format(FORMATOS.get("headerGrupos")))
+		for var, posic in var_columnas:
+			if posic == 1:
+				#sheet.write(row, col, var, book.add_format(dict(**FORMATOS.get("center"), **FORMATOS.get("medio"))))
+				sheet.write(row, col, var, book.add_format(FORMATOS.get("headerGrupos")))
+			else:
+				#sheet.merge_range(row, col, row, col+posic-1, var, book.add_format(dict(**FORMATOS.get("center"), **FORMATOS.get("wrap"), **FORMATOS.get("medio"))))
+				sheet.merge_range(row, col, row, col+posic-1, var, book.add_format(FORMATOS.get("headerGrupos")))
 
-		col += posic
-	################# FIN TITULOS COLUMNAS VACIA #################
+			col += posic
+		################# FIN TITULOS COLUMNAS VACIA #################
 
-	################# LINEA VACIA #################
-	col = 2
-	row += 1
-	imp_linea_vacia(book, sheet, row, col)
+		################# LINEA VACIA #################
+		col = 2
+		row += 1
+		imp_linea_vacia(book, sheet, row, col)
 
-	################# ITEMS #################
-	row += 1
-	lineas = LineaPresupuesto.objects.filter(presupuesto=obj.id)#.order_by('-check_in')
-	initialRow = row
+		################# ITEMS #################
+		row += 1
+		lineas = LineaPresupuesto.objects.filter(presupuesto=obj.id)#.order_by('-check_in')
+		initialRow = row
 
-	#imprimiendo valores...
-	for obj in queryset:
-		for linea in lineas:
-			sheet.write(row, col, linea.repuesto.codigo, book.add_format(FORMATOS.get("item_BI")) )
-			sheet.write(row, col+1, linea.cantidad, book.add_format(FORMATOS.get("item_BI")))
-			sheet.write(row, col+2, linea.repuesto.nombre, book.add_format(FORMATOS.get("item_BI")))	#descripcion
-			sheet.write(row, col+3, obj.moneda.codigo, book.add_format(FORMATOS.get("item_BI")))
-			sheet.write(row, col+4, linea.costo_custom if linea.costo_custom else linea.repuesto.costo * obj.tasa_cambio, book.add_format(FORMATOS.get("item_SB")))
-			sheet.write(row, col+5, obj.moneda.codigo, book.add_format(FORMATOS.get("item_BI")))
-			sheet.write_formula(row, col+6, f'D{row+1}*G{row+1}', book.add_format(FORMATOS.get("item_SB")))
-			sheet.write(row, col+7,"+ IVA", book.add_format(FORMATOS.get("item_BD")))
+		#imprimiendo valores...
+		for obj in queryset:
+			for linea in lineas:
+				sheet.write(row, col, linea.repuesto.codigo, book.add_format(FORMATOS.get("item_BI")) )
+				sheet.write(row, col+1, linea.cantidad, book.add_format(FORMATOS.get("item_BI")))
+				sheet.write(row, col+2, linea.repuesto.nombre, book.add_format(FORMATOS.get("item_BI")))	#descripcion
+				sheet.write(row, col+3, obj.moneda.codigo, book.add_format(FORMATOS.get("item_BI")))
+				sheet.write(row, col+4, linea.costo_custom if linea.costo_custom else linea.repuesto.costo * obj.tasa_cambio, book.add_format(FORMATOS.get("item_SB")))
+				sheet.write(row, col+5, obj.moneda.codigo, book.add_format(FORMATOS.get("item_BI")))
+				sheet.write_formula(row, col+6, f'D{row+1}*G{row+1}', book.add_format(FORMATOS.get("item_SB")))
+				sheet.write(row, col+7,"+ IVA", book.add_format(FORMATOS.get("item_BD")))
 
-			row += 1
-	################# FIN ITEMS #################
-	
-	################# LINEA VACIA #################
-	imp_linea_vacia(book, sheet, row, col)
-	
-	################# LINEA TOTAL #################
-	row += 1
-	imp_linea_total(book, sheet, row, col, obj.moneda.codigo, initialRow)
-	
-	################# LINEA FINAL #################
-	row += 1
-	imp_linea_vacia(book, sheet, row, col, final=True)
+				row += 1
+		################# FIN ITEMS #################
+		
+		################# LINEA VACIA #################
+		imp_linea_vacia(book, sheet, row, col)
+		
+		################# LINEA TOTAL #################
+		row += 1
+		imp_linea_total(book, sheet, row, col, obj.moneda.codigo, initialRow)
+		
+		################# LINEA FINAL #################
+		row += 1
+		imp_linea_vacia(book, sheet, row, col, final=True)
 
-	################# CONDICIONES COMERCIALES #################
-	row += 2
-	col = 2
-	imp_condiciones(book, sheet, row, col, tipo="presupuesto")
+		################# CONDICIONES COMERCIALES #################
+		row += 2
+		col = 2
+		imp_condiciones(book, sheet, row, col, tipo="presupuesto")
 
-	book.close()
+		book.close()
 	return response
 
 def crea_excel_oferta(queryset):

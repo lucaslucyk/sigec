@@ -1,11 +1,11 @@
 import os
 #from datetime import datetime
 
-VERSION = "1.8.3"
+VERSION = "1.8.4"
 '''
     VERSION:    1   - INICIAL
     RELEASE:    8   - GRAPHS OFERTAS VARIABLES CON QS
-    FIX:        3   - FIX SENSITIVE CASE FOR GRAPH SEARCH
+    FIX:        4   - URL GRAPH FIX & GENERATE EXCEL CHANGE
 '''
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)

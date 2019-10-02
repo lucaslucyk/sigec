@@ -86,13 +86,21 @@ document.addEventListener('DOMContentLoaded', () => {
   // Reload chart data from the backend on button click
   const btn = document.querySelector('#reload');
   btn.addEventListener('click', async() => {
-    const res = await fetch("/sigec/cotizaciones/oferta/chart_data/");
+    var url = btn.baseURI;
+    if (btn.baseURI.indexOf("?") >= 0) {
+      url = btn.baseURI.substring(0,btn.baseURI.indexOf("?"));
+    }
+    url = url.concat("chart_data/");
+    //console.log(url);
+    
+    const res = await fetch(url);
     const json = await res.json();
     json.forEach((d) => {
       d.x = new Date(d.date);
     });
     chart.data.datasets[0].data = json;
     chart.update();
+    
   });
 });
 </script>
