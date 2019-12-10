@@ -44,6 +44,14 @@ document.addEventListener('DOMContentLoaded', () => {
     type: 'bar',
     data: {
       datasets: [
+        // {
+        //   type: 'line',
+        //   label: 'Facturadas',
+        //   borderColor: 'rgba(20,20,255,0.5)',
+        //   borderWidth: 2,
+        //   fill: false,
+        //   data: chartData,
+        // },
         {
           label: 'Ofertas generadas',
           data: chartData,
@@ -70,6 +78,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 //day : 'MMM YYYY', //For display by month
               },
             },
+            // ticks: {
+            //   callback: function(dataLabel, index) {
+            //       // Hide the label of every 2nd dataset. return null to hide the grid line too
+            //       return index % 2 === 0 ? dataLabel : '';
+            //   }
+            // },
           },
         ],
         yAxes: [
@@ -92,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     url = url.concat("chart_data/");
     //console.log(url);
-    
+
     const res = await fetch(url);
     const json = await res.json();
     json.forEach((d) => {

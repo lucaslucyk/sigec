@@ -4,6 +4,7 @@ from apps.data.modules.functions import crea_excel_oferta, import_products
 from django.contrib import messages
 from django.conf import settings
 from dynamic_raw_id.admin import DynamicRawIDMixin
+#from django.contrib.auth.models import User
 
 import json
 from django.core.serializers.json import DjangoJSONEncoder
@@ -16,6 +17,18 @@ from django.db.models import Q
 
 #from django.core.exceptions import ValidationError
 #from django import forms
+
+from django.contrib.auth.admin import UserAdmin
+
+UserAdmin.list_display += ('body_font',)  # don't forget the commas
+UserAdmin.list_filter += ('body_font',)
+fieldsets = (
+    ('Personalizadas', {
+        'classes': ('extrapretty',),
+        'fields': ('body_font',),
+    }),
+)
+UserAdmin.fieldsets += fieldsets
 
 class GrupoAdmin(admin.ModelAdmin):
     list_display = ("nombre",)
@@ -90,7 +103,10 @@ class OfertaAdmin(admin.ModelAdmin):
     list_display = ("id", "asunto", "fecha","cliente","moneda","tasa_cambio","costo_total")#, "facturado", "fileLink", "usuario")
     readonly_fields = ['fileLink']
     list_filter = ["moneda", "facturado", "usuario"]
-    search_fields = ['cliente__nombre', "asunto", "id", "usuario__first_name", "usuario__last_name", "usuario__username", "moneda__codigo", "moneda__nombre" ]
+    search_fields = [
+        'cliente__nombre', "asunto", "id", "usuario__first_name", "usuario__last_name",
+        "usuario__username", "moneda__codigo", "moneda__nombre"
+    ]
     list_display_links = ["id", "asunto"]
     #fields = ( "asunto", "cliente", "moneda", "tasa_cambio", "facturado", "oc_autorizacion")
     #list_editable =["facturado"]
@@ -144,19 +160,23 @@ class OfertaAdmin(admin.ModelAdmin):
         return JsonResponse(list(chart_data), safe=False)
 
     def chart_data(self, qs_filter=None):
-        if not qs_filter:   #retorno todos los elementos por cualquier error de req
-            return (
-            Oferta.objects.annotate(date=TruncDay("fecha"))
-            .values("date")
-            .annotate(y=Count("id"))
-            .order_by("-date")
-        )
+        #print("Fields order: ", self.list_display)
 
+        if not qs_filter :   #retorno todos los elementos por cualquier error de req
+            return (
+                Oferta.objects.annotate(date=TruncDay("fecha"))
+                .values("date")
+                .annotate(y=Count("id"))
+                .order_by('-date')
+            )
         qs = Q()
 
         #Condiciones para el campo de busqueda.
         if "q" in qs_filter.keys():
-            search_fields = ['cliente__nombre', "asunto", "id", "usuario__first_name", "usuario__last_name", "usuario__username", "moneda__codigo", "moneda__nombre" ]
+            search_fields = [
+                'cliente__nombre', "asunto", "id", "usuario__first_name", 
+                "usuario__last_name", "usuario__username", "moneda__codigo", "moneda__nombre"
+            ]
             condic = {}
             for f in search_fields:
                 condic[f'{f}__icontains'] = qs_filter.get("q")
@@ -165,7 +185,8 @@ class OfertaAdmin(admin.ModelAdmin):
 
         #Condiciones de filtro
         for k,v in qs_filter.dict().items():
-            if k is not "q":    #excluyo el campo de busqueda
+            #excluyo el campo de busqueda (q) y orden (o)
+            if k is not "q" and k is not "o":
                 qs.add(Q(**{k:v}), Q.AND)
 
         return (
