@@ -9,26 +9,26 @@ from dynamic_raw_id.admin import DynamicRawIDMixin
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Count
-from django.db.models.functions import TruncDay
+from django.db.models.functions import TruncDay, Trunc, TruncMonth
 from django.http import JsonResponse
 from django.urls import path
 
 from django.db.models import Q
 
-#from django.core.exceptions import ValidationError
-#from django import forms
+# #from django.core.exceptions import ValidationError
+# #from django import forms
 
-from django.contrib.auth.admin import UserAdmin
+# from django.contrib.auth.admin import UserAdmin
 
-UserAdmin.list_display += ('body_font',)  # don't forget the commas
-UserAdmin.list_filter += ('body_font',)
-fieldsets = (
-    ('Personalizadas', {
-        'classes': ('extrapretty',),
-        'fields': ('body_font',),
-    }),
-)
-UserAdmin.fieldsets += fieldsets
+# UserAdmin.list_display += ('body_font',)  # don't forget the commas
+# UserAdmin.list_filter += ('body_font',)
+# fieldsets = (
+#     ('Personalizadas', {
+#         'classes': ('extrapretty',),
+#         'fields': ('body_font',),
+#     }),
+# )
+# UserAdmin.fieldsets += fieldsets
 
 class GrupoAdmin(admin.ModelAdmin):
     list_display = ("nombre",)
@@ -164,6 +164,7 @@ class OfertaAdmin(admin.ModelAdmin):
 
         if not qs_filter :   #retorno todos los elementos por cualquier error de req
             return (
+                #Oferta.objects.annotate(date=Trunc("fecha", "month"))
                 Oferta.objects.annotate(date=TruncDay("fecha"))
                 .values("date")
                 .annotate(y=Count("id"))

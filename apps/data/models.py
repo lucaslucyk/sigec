@@ -3,11 +3,10 @@ from datetime import datetime
 from django.utils.safestring import mark_safe
 #from django.template.defaultfilters import escape
 from django.urls import reverse
-from django.contrib.auth.models import User
 
+#from django.contrib.auth.models import User
 # Create your models here.
-
-User.add_to_class('body_font', models.CharField(max_length=50, unique=False, blank=True, null=True))
+#User.add_to_class('body_font', models.CharField(max_length=50, unique=False, blank=True, null=True))
 
 class Comercial(models.Model):
     nombre_apellido = models.CharField(max_length=50, unique=True)

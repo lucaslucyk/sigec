@@ -8,6 +8,25 @@ from django.contrib import messages
 #import re 
 #from django.urls import reverse
 
+# #from django.core.exceptions import ValidationError
+# #from django import forms
+
+# from django.contrib.auth.admin import UserAdmin
+
+# UserAdmin.list_display += ('body_font',)  # don't forget the commas
+# UserAdmin.list_filter += ('body_font',)
+# fieldsets = (
+#     ('Personalizadas', {
+#         'classes': ('extrapretty',),
+#         'fields': ('body_font',),
+#     }),
+# )
+# UserAdmin.fieldsets += fieldsets
+
+
+
+
+
 admin.site.site_header = "SIGeC - v{}".format(settings.VERSION)
 admin.site.site_title = "Sistema Integrado de Gestión de Cotizaciones"
 admin.site.index_title = "SIGeC | Creado por Lucas Lucyk"
