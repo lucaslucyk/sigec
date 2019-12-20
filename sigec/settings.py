@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'apps.data',
     'apps.cotizaciones',
     'apps.reparaciones',
+    'apps.usuarios',
 
     # ... other apps
     'dynamic_raw_id',
