@@ -18,9 +18,14 @@ from django.urls import path, include, re_path
 from django.conf.urls.static import static
 from django.conf import settings
 
+from apps.usuarios.views import ProfileDetailView, ProfileUpdate #, user_profile 
+
 urlpatterns = [
     re_path(r'^admin/dynamic_raw_id/', include('dynamic_raw_id.urls')),
     path('', admin.site.urls),
+    #path('perfil/', user_profile),
+    path('perfil/', ProfileUpdate.as_view(), name='profile-update'),
+    path('perfil/ver/', ProfileDetailView.as_view(), name='profile-detail'),
     #path('admin/', admin.site.urls),
 ]
 

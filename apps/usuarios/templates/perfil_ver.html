@@ -1,0 +1,8 @@
+{% extends "admin/base_site.html" %}
+{% load staticfiles %}
+
+{% block content %}
+
+<h1>{{ object.user }}</h1> 
+<p>Body font: {{ object.report_body_font }}</p>
+{% endblock %}

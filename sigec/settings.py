@@ -41,6 +41,8 @@ INSTALLED_APPS = [
 
     # ... other apps
     'dynamic_raw_id',
+    'colorful',
+    #'crispy_forms',
     #'admin_footer',    #django-admin-footer
 ]
 
@@ -118,7 +120,8 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
+#AUTH_USER_MODEL = 'apps.usuarios.models.Perfil'
+#AUTH_PROFILE_MODULE = 'apps.usuarios.models.Perfil'
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/

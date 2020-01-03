@@ -1,2 +1,5 @@
 django==2.2.4
-xlsxrwiter
+XlsxWriter
+django-dynamic-raw-id
+Pillow
+django-crispy-forms

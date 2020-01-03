@@ -8,9 +8,12 @@ import/*
 !apps/cotizaciones/migrations/
 !apps/data/migrations/
 !apps/reparaciones/migrations/
+!apps/usuarios/migrations/
 apps/cotizaciones/migrations/*
 apps/data/migrations/*
 apps/reparaciones/migrations/*
+apps/usuarios/migrations/*
 !apps/cotizaciones/migrations/__init__.py
 !apps/data/migrations/__init__.py
 !apps/reparaciones/migrations/__init__.py
+!apps/usuarios/migrations/__init__.py
