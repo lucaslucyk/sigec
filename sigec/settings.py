@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'apps.data',
     'apps.cotizaciones',
     'apps.reparaciones',
+    'apps.saas',
 
     # ... other apps
     'dynamic_raw_id',
@@ -142,3 +143,33 @@ MONEDA_DEFAULT = 'U$D'
 FILE_CLIENTES = "{}\\import\\clientes.csv".format(BASE_DIR)
 FILE_PRODUCTOS = "{}\\import\\productos.csv".format(BASE_DIR)
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
+
+
+#FOR SAAS OFFERS
+TRANSFER_PRICE = 1.51
+UE_TO_USD = 1.11
+MANTENIMIENTO_ANUAL = 1.18
+IMPLEMENTACION = 25
+COMISION_VENTAS = 5
+
+
+FINANCING = (
+        ('36', '36 meses'),
+        ('48', '48 meses'),
+    )
+HARDWARE = (
+    ('p', 'Propio'),
+    ('t', 'Terceros'),
+)
+SELLER = (
+    ('0', 'Venta directa'),
+    ('1', 'Distribuidor'),
+    ('2', 'Integrador'),
+)
+
+PRICING_MANAGEMENT = (
+    ('vf', 'Valor fijo por módulo'),
+    ('rp', 'Rangos de precio'),
+    ('pu', 'Variable por cantidad'),
+)
+

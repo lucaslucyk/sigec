@@ -10,7 +10,8 @@ from apps.cotizaciones.models import LineaOferta, Producto, Grupo, Condiciones_C
 from decimal import Decimal
 #import openpyxl
 
-##customs process
+def convert_price(valor, tasa_cambio):
+	return round(float(valor) * tasa_cambio, 2)
 
 def export_to_csv(self, queryset, *args):
 	
