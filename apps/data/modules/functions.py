@@ -7,6 +7,7 @@ from apps.data.models import Contrato, Cliente, Comercial, Categoria, Software
 from apps.data.modules.constantes import FORMATOS, CONDIC_PRESUP, CONDIC_OFERTAS
 from apps.reparaciones.models import LineaPresupuesto
 from apps.cotizaciones.models import LineaOferta, Producto, Grupo, Condiciones_Custom
+#from apps.saas.models import ModuloSaaS
 from decimal import Decimal
 #import openpyxl
 

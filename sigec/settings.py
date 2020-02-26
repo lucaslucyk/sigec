@@ -149,24 +149,23 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 TRANSFER_PRICE = 1.51
 UE_TO_USD = 1.11
 MANTENIMIENTO_ANUAL = 1.18
-IMPLEMENTACION = 25
-COMISION_VENTAS = 5
+IMPLEMENTACION = 0.25
+COMISION_VENTAS = 0.05
 
 
 FINANCING = (
-        ('36', '36 meses'),
-        ('48', '48 meses'),
-    )
+    ('36', '36 meses'),
+    ('48', '48 meses'),
+)
 HARDWARE = (
-    ('p', 'Propio'),
+    ('p', 'SPEC'),
     ('t', 'Terceros'),
 )
 SELLER = (
-    ('0', 'Venta directa'),
-    ('1', 'Distribuidor'),
-    ('2', 'Integrador'),
+    ('0', 'End User'),
+    ('1', 'Partner'),
+    ('2', 'Mayorista'),
 )
-
 PRICING_MANAGEMENT = (
     ('vf', 'Valor fijo por módulo'),
     ('rp', 'Rangos de precio'),
