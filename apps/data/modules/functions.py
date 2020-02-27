@@ -12,7 +12,7 @@ from decimal import Decimal
 #import openpyxl
 
 def convert_price(valor, tasa_cambio):
-	return round(float(valor) * tasa_cambio, 2)
+	return round(Decimal(valor) * Decimal(tasa_cambio), 3)
 
 def export_to_csv(self, queryset, *args):
 	

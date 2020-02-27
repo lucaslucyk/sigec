@@ -20,7 +20,7 @@ class Margin(models.Model):
     hardware = models.CharField(max_length=1, choices=settings.HARDWARE, blank=False, \
         default=settings.HARDWARE[0][0], help_text="Utilizará hardware propio (SPEC) o de terceros?")
 
-    margin_spec = models.DecimalField("Margen Bruto SPEC", default=0, max_digits=10, decimal_places=2, \
+    margin_spec = models.DecimalField("Margen SPEC", default=0, max_digits=10, decimal_places=2, \
         validators=[MinValueValidator(Decimal('1.00'))], help_text='Múltiplo del márgen')
     
     margin_mayorista = models.DecimalField("Markup Mayorista", default=0, max_digits=10, decimal_places=2, \
@@ -39,8 +39,8 @@ class Margin(models.Model):
         return f'{self.margin_spec} | {self.margin_integrador} | {self.margin_mayorista}'
 
     class Meta:
-        verbose_name = "Margen & Rebate"
-        verbose_name_plural = "Márgenes & Rebates"
+        verbose_name = "Margen, Markup & Rebate"
+        verbose_name_plural = "Márgenes, Markups & Rebates"
 
 class ModuloSaaS(models.Model):
     nombre = models.CharField(max_length=50, unique=True, blank=False, null=False)
@@ -111,7 +111,8 @@ class Offer(models.Model):
     hardware = models.CharField(max_length=1, choices=settings.HARDWARE, blank=False, \
         default=settings.HARDWARE[0][0], help_text="Utilizará hardware propio (SPEC) o de terceros?")
 
-    empleados = models.PositiveIntegerField("Cantidad de empleados", default=1, validators=[MinValueValidator(1)])
+    empleados = models.PositiveIntegerField("Empleados", default=1, validators=[MinValueValidator(1)], \
+        help_text='Cantidad de empleados. Indicar un valor entre 1 y 2000.')
 
     modulos = models.ManyToManyField(ModuloSaaS, blank=True)#, default=get_all_modules())
 
@@ -152,7 +153,7 @@ class Offer(models.Model):
     @property
     def TP_mensual_UE(self):
         """ Return -in Euros- the Transfer price of all modules out of number of months """
-        return round(self.TP_total / int(self.financing) * Decimal(settings.TRANSFER_PRICE), 2)
+        return round(self.TP_total / int(self.financing) * Decimal(settings.FACTOR_TRANSFER_PRICE), 2)
     
     @property
     def TP_mensual(self):
@@ -173,70 +174,79 @@ class Offer(models.Model):
         return getattr(margins[0], margin_or_rebate, 0)
 
     @property
-    def margen_bruto_spec(self):
+    def margen_spec(self):
         return self.get_margin_or_rebate("margin_spec")
     #margen_spec.short_description = "Margen Bruto SPEC"
     #only for functions -no property-
 
     @property
-    def markup_integrador(self):
-        return self.get_margin_or_rebate("margin_integrador")
-
+    def margen_bruto_spec(self):
+        """ return dollar value """
+        return round(self.TP_mensual * self.margen_spec * Decimal(settings.MANTENIMIENTO_ANUAL), 2)
+    
     @property
     def markup_mayorista(self):
         return self.get_margin_or_rebate("margin_mayorista")
+
+    @property
+    def pvs_mayorista(self):
+        """ pvs mayorista in USD """
+        return round(self.margen_bruto_spec * self.markup_mayorista, 2)
+
+    @property
+    def markup_partner(self):
+        return self.get_margin_or_rebate("margin_integrador")
+
+    @property
+    def pvs_partner(self):
+        """ pvs partner in USD """
+        return round(self.pvs_mayorista * self.markup_partner, 2)
+
+    @property
+    def margen_total(self):
+        """ returns the total margin coefficient for final sell price"""
+        return round(self.margen_spec * self.markup_partner * self.markup_mayorista, 3)
 
     @property
     def rebate_mayorista(self):
         return self.get_margin_or_rebate("rebate_mayorista")
 
     @property
+    def rebate_mayorista_usd(self):
+        return round(self.rebate_mayorista * self.margen_bruto_spec, 2)
+
+    @property
     def rebate_partner(self):
         return self.get_margin_or_rebate("rebate_partner")
-    
+
     @property
-    def margen_total(self):
-        """ returns the total margin coefficient """
-        return round(self.margen_bruto_spec * self.markup_integrador * self.markup_mayorista, 3)
-    
-    @property
-    def precio_combo_UE(self):
-        """ includes software, hosting, maintenance and help desk with all margins"""
-        return round(self.TP_mensual_UE * self.margen_total * Decimal(settings.MANTENIMIENTO_ANUAL), 2)
+    def rebate_partner_usd(self):
+        return round(self.rebate_partner * self.margen_bruto_spec, 2)
 
     @property
     def precio_combo(self):
-        """ combo price in USD """
-        return round(functions.convert_price(self.precio_combo_UE, settings.UE_TO_USD), 2)
-    
-    @property
-    def implementacion_UE(self):
-        """ returns the implementation price """
-        return round(self.precio_combo_UE * Decimal(settings.IMPLEMENTACION), 2)
+        """ includes software, hosting, maintenance and help desk with all margins in USD """
+        return round(self.TP_mensual * self.margen_total * Decimal(settings.MANTENIMIENTO_ANUAL), 2)
     
     @property
     def implementacion(self):
-        """ implementation price in USD """
-        return round(functions.convert_price(self.implementacion_UE, settings.UE_TO_USD), 2)
-
-    @property
-    def pv_mensual_UE(self):
-        """ returns the mensual sell price for all employees """
-        return round(self.precio_combo_UE + self.implementacion_UE, 2)
+        """ returns the implementation price in USD"""
+        return round(self.precio_combo * Decimal(settings.IMPLEMENTACION), 2)
 
     @property
     def pv_mensual(self):
-        """ Mensual Sell Price in USD """
-        return round(functions.convert_price(self.pv_mensual_UE, settings.UE_TO_USD), 2)
-
-    @property
-    def pv_por_capita_UE(self):
-        """ returns the mensual sell price per employee """
-        return round(self.pv_mensual_UE / self.empleados, 2)
+        """ returns the mensual sell price for all employees in USD"""
+        return round(self.precio_combo + self.implementacion, 2)
 
     @property
     def pv_por_capita(self):
-        return round(functions.convert_price(self.pv_por_capita_UE, settings.UE_TO_USD), 2)
+        """ returns the mensual sell price per employee in USD"""
+        return round(self.pv_mensual / self.empleados, 2)
+    
+    @property
+    def comision_mensual(self):
+        """ returns the mensual comission in USD """
+        return round((self.implementacion + self.margen_bruto_spec) * Decimal(settings.COMISION_VENTAS), 2)
     
     def __str__(self):
         return f'{self.client} | {self.subject}'

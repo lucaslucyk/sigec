@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 
     # ... other apps
     'dynamic_raw_id',
+    
     #'admin_footer',    #django-admin-footer
 ]
 
@@ -145,8 +146,8 @@ FILE_PRODUCTOS = "{}\\import\\productos.csv".format(BASE_DIR)
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 
 
-#FOR SAAS OFFERS
-TRANSFER_PRICE = 1.51
+#FOR SAAS OFFERS - porcentual values
+FACTOR_TRANSFER_PRICE = 1.51
 UE_TO_USD = 1.11
 MANTENIMIENTO_ANUAL = 1.18
 IMPLEMENTACION = 0.25

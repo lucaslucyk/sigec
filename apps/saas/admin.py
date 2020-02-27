@@ -1,6 +1,5 @@
 from django.contrib import admin
 from apps.saas.models import Offer, Margin, ModuloSaaS, EscalaTransferPrice
-# Register your models here.
 
 @admin.register(EscalaTransferPrice)
 class EscalaTransferPriceAdmin(admin.ModelAdmin):
@@ -17,15 +16,29 @@ class MarginAdmin(admin.ModelAdmin):
 
 @admin.register(Offer)
 class OfferAdmin(admin.ModelAdmin):
-	list_display = ('empleados', 'TP_mensual', 
-		'margen_bruto_spec', 'markup_mayorista', 'markup_integrador', 'precio_combo', 
-		'implementacion', 'pv_mensual', 'pv_por_capita', 'rebate_mayorista', 'rebate_partner')
+	list_display = (
+		'empleados', 'financing', 'TP_mensual', 
+		'margen_spec', 'margen_bruto_spec', 
+		'markup_mayorista', 'pvs_mayorista',
+		'markup_partner', 'pvs_partner',
+		'precio_combo', 'implementacion', 'pv_mensual', 
+		'pv_por_capita', 'comision_mensual',
+		'rebate_mayorista', 'rebate_mayorista_usd',
+		'rebate_partner', 'rebate_partner_usd',
+		)
 
 	fieldsets = (
 		(None, {
 			'fields': ('subject', 'client', 'tipo_venta', 'financing', 'hardware', 'empleados', 'modulos')
 		}),
 	)
+	autocomplete_fields = ['client',]
+
+	"""
+	formfield_overrides = {
+        models.IntegerField: {'widget': SlideForm},
+    }
+    """
 
 	def save_model(self, request, obj, form, change):
 		obj.user = request.user
