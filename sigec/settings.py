@@ -168,8 +168,10 @@ SELLER = (
     ('2', 'Mayorista'),
 )
 PRICING_MANAGEMENT = (
-    ('vf', 'Valor fijo por módulo'),
+    ('vf', 'Valor fijo'),
+    ('vm', 'Valor fijo Mensual'),
     ('rp', 'Rangos de precio'),
+    ('rm', 'Rangos de precio Mensual'),
     ('pu', 'Variable por cantidad'),
 )
 

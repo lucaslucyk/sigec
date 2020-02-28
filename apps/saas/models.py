@@ -57,6 +57,10 @@ class ModuloSaaS(models.Model):
         return True if self.pricing_management == 'rp' else False
 
     @property
+    def is_mensual_range(self):
+        return True if self.pricing_management == 'rm' else False
+
+    @property
     def is_var_cantidad(self):
         return True if self.pricing_management == 'pu' else False
     
@@ -134,9 +138,17 @@ class Offer(models.Model):
         if modulo.is_range_price and escalas_gt:
             return escalas_gt[0].tp_unidad
 
+        #If values are mensual
+        if modulo.is_mensual_range and escalas_gt:
+            return escalas_gt[0].tp_unidad * int(self.financing)
+
         #scales with lower price. 
         #The last one is the only one important to know the number of employees that I should not consider
-        escalas_lt = escalas.filter(alcance__lte = self.empleados).order_by('-alcance')
+        escalas_lt = escalas.filter(alcance__lt = self.empleados).order_by('-alcance')
+
+        #if is the minimal scale
+        if not escalas_lt:
+            return escalas_gt[0].precio_base + self.empleados * escalas_gt[0].tp_unidad
 
         #precio base de escala actual + la diff entre la cant de emple y la maxima de escala anterior * el precio 
         #unitario de la escala actual
@@ -153,12 +165,12 @@ class Offer(models.Model):
     @property
     def TP_mensual_UE(self):
         """ Return -in Euros- the Transfer price of all modules out of number of months """
-        return round(self.TP_total / int(self.financing) * Decimal(settings.FACTOR_TRANSFER_PRICE), 2)
+        return round(Decimal(self.TP_total / int(self.financing)) * Decimal(settings.FACTOR_TRANSFER_PRICE), 2)
     
     @property
     def TP_mensual(self):
         """ TP Mensual in USD """
-        return functions.convert_price(self.TP_mensual_UE, settings.UE_TO_USD)
+        return round(functions.convert_price(self.TP_mensual_UE, settings.UE_TO_USD), 2)
 
     def get_margin_or_rebate(self, margin_or_rebate):
         """ returns the margin or rebate of a specific seller """
@@ -236,7 +248,8 @@ class Offer(models.Model):
     @property
     def pv_mensual(self):
         """ returns the mensual sell price for all employees in USD"""
-        return round(self.precio_combo + self.implementacion, 2)
+        #return round(self.precio_combo + self.implementacion, 2)
+        return round(self.precio_combo, 2)
 
     @property
     def pv_por_capita(self):

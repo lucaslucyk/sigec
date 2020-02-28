@@ -17,9 +17,12 @@ from django.contrib import admin
 from django.urls import path, include, re_path
 from django.conf.urls.static import static
 from django.conf import settings
+from apps.saas import views as saasviews
 
 urlpatterns = [
     re_path(r'^admin/dynamic_raw_id/', include('dynamic_raw_id.urls')),
+    path('api_precios/<str:tipo_venta>/<str:plan>/<str:hardware>/<str:modulos>/<int:empleados>/', saasviews.sample_text, name="sample-view"),
+
     path('', admin.site.urls),
     #path('admin/', admin.site.urls),
 ]
