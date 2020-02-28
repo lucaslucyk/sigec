@@ -17,14 +17,16 @@ class MarginAdmin(admin.ModelAdmin):
 @admin.register(Offer)
 class OfferAdmin(admin.ModelAdmin):
 	list_display = (
-		'empleados', 'financing', 'TP_mensual', 
-		'margen_spec', 'margen_bruto_spec', 
-		'markup_mayorista', 'pvs_mayorista',
-		'markup_partner', 'pvs_partner',
-		'precio_combo', 'implementacion', 'pv_mensual', 
+		'empleados', 'financing', 'tipo_venta', 'hardware',
+		'TP_mensual', 
+		'pvp_spec', 
+		'pvs_mayorista',
+		'pvs_partner',
+		'pvs_end_user', 'implementacion', 
+		#'pv_mensual', 
 		'pv_por_capita', 'comision_mensual',
-		'rebate_mayorista', 'rebate_mayorista_usd',
-		'rebate_partner', 'rebate_partner_usd',
+		'rebate_mayorista_usd',
+		'rebate_partner_usd',
 		)
 
 	fieldsets = (

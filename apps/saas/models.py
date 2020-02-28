@@ -192,7 +192,7 @@ class Offer(models.Model):
     #only for functions -no property-
 
     @property
-    def margen_bruto_spec(self):
+    def pvp_spec(self):
         """ return dollar value """
         return round(self.TP_mensual * self.margen_spec * Decimal(settings.MANTENIMIENTO_ANUAL), 2)
     
@@ -203,7 +203,7 @@ class Offer(models.Model):
     @property
     def pvs_mayorista(self):
         """ pvs mayorista in USD """
-        return round(self.margen_bruto_spec * self.markup_mayorista, 2)
+        return round(self.pvp_spec * self.markup_mayorista, 2)
 
     @property
     def markup_partner(self):
@@ -217,39 +217,30 @@ class Offer(models.Model):
     @property
     def margen_total(self):
         """ returns the total margin coefficient for final sell price"""
-        return round(self.margen_spec * self.markup_partner * self.markup_mayorista, 3)
+        return self.margen_spec * self.markup_partner * self.markup_mayorista
 
     @property
-    def rebate_mayorista(self):
-        return self.get_margin_or_rebate("rebate_mayorista")
-
-    @property
-    def rebate_mayorista_usd(self):
-        return round(self.rebate_mayorista * self.margen_bruto_spec, 2)
-
-    @property
-    def rebate_partner(self):
-        return self.get_margin_or_rebate("rebate_partner")
-
-    @property
-    def rebate_partner_usd(self):
-        return round(self.rebate_partner * self.margen_bruto_spec, 2)
-
-    @property
-    def precio_combo(self):
+    def pvs_end_user(self):
         """ includes software, hosting, maintenance and help desk with all margins in USD """
-        return round(self.TP_mensual * self.margen_total * Decimal(settings.MANTENIMIENTO_ANUAL), 2)
+        #return round(self.TP_mensual * self.margen_total * Decimal(settings.MANTENIMIENTO_ANUAL), 2)
+
+        return max(self.pvs_partner, self.pvs_mayorista, self.pvp_spec)
     
     @property
     def implementacion(self):
         """ returns the implementation price in USD"""
-        return round(self.precio_combo * Decimal(settings.IMPLEMENTACION), 2)
+        return round(self.pvp_spec * Decimal(settings.IMPLEMENTACION), 2)
 
     @property
     def pv_mensual(self):
-        """ returns the mensual sell price for all employees in USD"""
-        #return round(self.precio_combo + self.implementacion, 2)
-        return round(self.precio_combo, 2)
+        """ returns the mensual sell price for all employees in USD
+            
+            Deberá retornar pvs_end_user + implementacion. 
+            
+            Borrado manualmente por ahora. Al momento de implementarlo, considerar sumar a la cuenta.
+        """
+        #return round(self.pvs_end_user + self.implementacion, 2)
+        return round(self.pvs_end_user, 2)
 
     @property
     def pv_por_capita(self):
@@ -257,9 +248,25 @@ class Offer(models.Model):
         return round(self.pv_mensual / self.empleados, 2)
     
     @property
+    def rebate_mayorista(self):
+        return self.get_margin_or_rebate("rebate_mayorista")
+
+    @property
+    def rebate_mayorista_usd(self):
+        return round(self.rebate_mayorista * self.pvp_spec, 2)
+
+    @property
+    def rebate_partner(self):
+        return self.get_margin_or_rebate("rebate_partner")
+
+    @property
+    def rebate_partner_usd(self):
+        return round(self.rebate_partner * self.pvp_spec, 2)
+
+    @property
     def comision_mensual(self):
         """ returns the mensual comission in USD """
-        return round((self.implementacion + self.margen_bruto_spec) * Decimal(settings.COMISION_VENTAS), 2)
+        return round((self.implementacion + self.pvp_spec) * Decimal(settings.COMISION_VENTAS), 2)
     
     def __str__(self):
         return f'{self.client} | {self.subject}'
