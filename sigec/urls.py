@@ -21,7 +21,8 @@ from apps.saas import views as saasviews
 
 urlpatterns = [
     re_path(r'^admin/dynamic_raw_id/', include('dynamic_raw_id.urls')),
-    path('api_precios/<str:tipo_venta>/<str:plan>/<str:hardware>/<str:modulos>/<int:empleados>/', saasviews.sample_text, name="sample-view"),
+    path('create_offer/', saasviews.offer_create, name="offer_create"),
+    path('get_precios/<str:tipo_venta>/<str:plan>/<str:hardware>/<str:modulos>/<int:empleados>/', saasviews.get_precios, name="get_precios"),
 
     path('', admin.site.urls),
     #path('admin/', admin.site.urls),

@@ -1,54 +1,86 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-from apps.saas.models import Offer, ModuloSaaS
 from django.db.models import Q
 from operator import __or__ as OR
 from functools import reduce
 from django.conf import settings
 
-def sample_text(request, tipo_venta, plan, hardware, modulos, empleados):
+from apps.saas.models import Offer, ModuloSaaS
+from apps.saas.forms import OfferForm
 
-	offer = Offer.objects.create(
-			tipo_venta = tipo_venta,
-			financing = plan,
-			hardware = hardware,
-			empleados = empleados,
-			)
+import json
+from django.core.serializers.json import DjangoJSONEncoder
 
-	if modulos != '*':
-		qs = [Q(nombre=modulo) for modulo in modulos.split("-")]
-		offer.modulos.set(ModuloSaaS.objects.filter(reduce(OR, qs)))
+def get_precios(request, tipo_venta, plan, hardware, modulos, empleados, extra_context=None):
 
-	else:
-		offer.modulos.set(ModuloSaaS.objects.all())
+    if not empleados:
+        return JsonResponse({"form": {"vm_por_capita": float(0)}})
 
-	context = {}
-	try:
-		context = {
-			
-			"Tipo de venta": dict(settings.SELLER).get(offer.tipo_venta),
-			"Plan": dict(settings.FINANCING).get(offer.financing),
-			"Hardware": dict(settings.HARDWARE).get(offer.hardware),
-			"Empleados": empleados,
-			"Módulos": [modulo.nombre for modulo in offer.modulos.all()],
-			
-			"_valores_": "***",
+    offer = Offer.objects.create(
+            tipo_venta = tipo_venta,
+            financing = plan,
+            hardware = hardware,
+            empleados = empleados,
+            )
 
-			"Transfer Price Mensual": float(offer.TP_mensual),
-			"Soft, Host, Mant & Help Desk": float(offer.pv_mensual),
-			"Implementación": float(offer.implementacion),
+    if modulos != '*':
+        qs = [Q(nombre=modulo) for modulo in modulos.split("-")]
+        offer.modulos.set(ModuloSaaS.objects.filter(reduce(OR, qs)))
 
-			"Valor mensual por cápita": float(offer.pv_por_capita),
-		}
+    else:
+        offer.modulos.set(ModuloSaaS.objects.all())
 
-		Offer.objects.get(id=offer.id).delete()
+    context = {}
+    try:
+        form = {
+            
+            "tipo_de_venta": dict(settings.SELLER).get(offer.tipo_venta),
+            "plan": dict(settings.FINANCING).get(offer.financing),
+            "hardware": dict(settings.HARDWARE).get(offer.hardware),
+            "empleados": empleados,
+            "modulos": [modulo.nombre for modulo in offer.modulos.all()],
+            
+            ### valores
 
-	except:
-		#delete all objects if raises an global error
-		#only for can enter in django-amdin and haven't index error
-		Offer.objects.all().delete()
+            "tp_mensual": float(offer.TP_mensual),
+            "soft_host_mant_hd": float(offer.pv_mensual),
+            "implementacion": float(offer.implementacion),
 
-	return JsonResponse(context)
+            "vm_por_capita": float(offer.pv_por_capita),
+        }
+
+        Offer.objects.get(id=offer.id).delete()
+
+    except:
+        #delete all objects if raises an global error
+        #only for can enter in django-amdin and haven't index error
+        Offer.objects.all().delete()
+    
+    context = {
+        "form": form,
+    }
+
+    #return context data
+    return JsonResponse(context)
 
 
-	#return HttpResponse("Sample view " + " ".join(modulos) + " " + str(empleados) + str(offer.pv_por_capita))
+def offer_create(request):
+    # if not request.user.is_staff or not request.user.is_superuser:
+    #     raise Http404
+        
+    #form = OfferForm(request.POST or None, request.FILES or None)
+
+    # if form.is_valid():
+    #     instance = form.save(commit=False)
+    #     instance.user = request.user
+    #     instance.save()
+    #     # message success
+    #     messages.success(request, "Creación correcta!")
+    #     return HttpResponseRedirect(instance.get_absolute_url())
+    
+    context = {
+        "form": {},
+    }
+
+
+    return render(request, "saas/saas.html", context)

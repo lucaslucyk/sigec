@@ -41,9 +41,12 @@ INSTALLED_APPS = [
 
     # ... other apps
     'dynamic_raw_id',
+    'crispy_forms',
     
     #'admin_footer',    #django-admin-footer
 ]
+
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -134,8 +137,16 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
-STATIC_ROOT = os.path.join(BASE_DIR,'static')
+
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+    #'/var/www/static/',
+]
+
+STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR),'statics_pub')
+
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR),'media_uploads')
@@ -167,6 +178,7 @@ SELLER = (
     ('1', 'Partner'),
     ('2', 'Mayorista'),
 )
+
 PRICING_MANAGEMENT = (
     ('vf', 'Valor fijo'),
     ('vm', 'Valor fijo Mensual'),

@@ -221,7 +221,7 @@ class Offer(models.Model):
 
     @property
     def pvs_end_user(self):
-        """ includes software, hosting, maintenance and help desk with all margins in USD """
+        """ includes software, hosting, maintenance and help desk with all margins in USD per month """
         #return round(self.TP_mensual * self.margen_total * Decimal(settings.MANTENIMIENTO_ANUAL), 2)
 
         return max(self.pvs_partner, self.pvs_mayorista, self.pvp_spec)
