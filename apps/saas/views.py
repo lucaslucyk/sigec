@@ -10,6 +10,7 @@ from apps.saas.forms import OfferForm
 
 import json
 from django.core.serializers.json import DjangoJSONEncoder
+import csv
 
 def get_precios(request, tipo_venta, plan, hardware, modulos, empleados, extra_context=None):
 
@@ -55,6 +56,7 @@ def get_precios(request, tipo_venta, plan, hardware, modulos, empleados, extra_c
         #delete all objects if raises an global error
         #only for can enter in django-amdin and haven't index error
         Offer.objects.all().delete()
+        form = {}
     
     context = {
         "form": form,
@@ -84,3 +86,33 @@ def offer_create(request):
 
 
     return render(request, "saas/saas.html", context)
+
+def generate_graph(request, tipo_venta, plan, hardware, modulos, empleados, fileName="last_graph.csv"):
+
+    offer = Offer.objects.create(
+        tipo_venta = tipo_venta,
+        financing = plan,
+        hardware = hardware,
+        )
+
+    if modulos != '*':
+        qs = [Q(nombre=modulo) for modulo in modulos.split("-")]
+        offer.modulos.set(ModuloSaaS.objects.filter(reduce(OR, qs)))
+    else:
+        offer.modulos.set(ModuloSaaS.objects.all())
+
+    results_capita = [("capitas", "precio_capita", "hosting", "cuota_mensual\n")]
+
+    for i in range(1, empleados +1):
+
+        offer.empleados = i
+        results_capita.append((str(i), str(offer.pv_por_capita).replace(".", ","), str(offer.pv_mensual).replace(".", ",") + '\n' ))
+    
+    Offer.objects.get(id=offer.id).delete()
+
+    with open(fileName, mode="w", encoding="utf-8") as file:
+        file.writelines([";".join(res) for res in results_capita])
+
+    return HttpResponse(f'File generado con {empleados} empleados!')
+        
+

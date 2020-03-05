@@ -185,5 +185,6 @@ PRICING_MANAGEMENT = (
     ('rp', 'Rangos de precio'),
     ('rm', 'Rangos de precio Mensual'),
     ('pu', 'Variable por cantidad'),
+    ('pm', 'Variable por cantidad Mensual'),
 )
 

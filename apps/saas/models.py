@@ -63,6 +63,10 @@ class ModuloSaaS(models.Model):
     @property
     def is_var_cantidad(self):
         return True if self.pricing_management == 'pu' else False
+
+    @property
+    def is_var_mensual(self):
+        return True if self.pricing_management == 'pm' else False
     
     def __str__(self):
         return f'{self.nombre}'
@@ -142,18 +146,29 @@ class Offer(models.Model):
         if modulo.is_mensual_range and escalas_gt:
             return escalas_gt[0].tp_unidad * int(self.financing)
 
+        if modulo.is_var_mensual and escalas_gt:
+            return (escalas_gt[0].precio_base + self.empleados * escalas_gt[0].tp_unidad) * int(self.financing)
+
         #scales with lower price. 
         #The last one is the only one important to know the number of employees that I should not consider
         escalas_lt = escalas.filter(alcance__lt = self.empleados).order_by('-alcance')
 
         #if is the minimal scale
         if not escalas_lt:
-            return escalas_gt[0].precio_base + self.empleados * escalas_gt[0].tp_unidad
+            module_price = escalas_gt[0].precio_base + self.empleados * escalas_gt[0].tp_unidad
+
+            #if the module price is mensual
+            #module_price = module_price * int(self.financing) if modulo.is_var_mensual else module_price
+            return module_price
 
         #precio base de escala actual + la diff entre la cant de emple y la maxima de escala anterior * el precio 
         #unitario de la escala actual
         #precio_base + (empleados - alcance_escala_anterior) * precio_unidad
         module_price = escalas_gt[0].precio_base + (self.empleados - escalas_lt[0].alcance) * escalas_gt[0].tp_unidad
+
+        #if the var per unit is mensual, return the price per months of plan
+        #module_price = module_price * int(self.financing) if modulo.is_var_mensual else module_price
+        #print(modulo, self.empleados - escalas_lt[0].alcance) if modulo.is_var_mensual else None
 
         return module_price
 
