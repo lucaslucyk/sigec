@@ -17,3 +17,5 @@ apps/saas/migrations/*
 !apps/data/migrations/__init__.py
 !apps/reparaciones/migrations/__init__.py
 !apps/saas/migrations/__init__.py
+*.csv
+*.xlsx
