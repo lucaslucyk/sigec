@@ -1,8 +1,6 @@
-//$(document).ready(function () {
-  //your code here
-
 
 const inputRange = $('#html-input-range');
+const inputText = $('#integCtrl');
 
 let htmlInputRange = {
   idNotThere : '<p>Nota: No existe tag con id html-input-range</p>',
@@ -53,6 +51,47 @@ let htmlInputRange = {
     }
   }
 }
+
+$(inputText).keypress(function(e){
+  var code = (e.code ? e.keyCode : e.which);
+  if (code == 13){
+    var cv = parseInt($(inputText).val());
+    var max = parseInt($('input[type=range]').attr('max'));
+    console.log(cv);
+    console.log(max);
+
+    if (cv >= max) {
+      contactus();
+    } else {
+      showPrice();
+      
+      let inputMax = 100 / inputRange.attr('max');
+      let trackerTooltipMove = (cv * inputMax);
+      $('.html-inupt-range .tooltip').css('left', trackerTooltipMove + '%');
+      $('.html-input-range-custom .hir-tracker-thumb').css('width', trackerTooltipMove + '%');
+      // updating tooltip value based on the range from to.
+      $('.html-inupt-range .tooltip').text(inputRange.val());
+
+      const price = get_precios(cv);
+    }
+  }
+});
+
+// $(inputText).on('input change', inputText, function(e){
+  
+//   var cv = $(this).val();
+//   var max = $('input[type=range]').attr('max');
+//   console.log(cv);
+//   console.log(max);
+
+//   if (cv >= max) {
+//     contactus();
+//   } else {
+//     showPrice();
+//     const price = get_precios(cv);
+//   }
+  
+// });
 
 $(inputRange).on("mouseup touchend", inputRange, function (e) {
   //actualizo el precio por persona y el total únicamente si suelto el mouse
@@ -128,6 +167,7 @@ function updatePrice(currentValue) {
   //const cv = get_precios(currentValue);
 
   $('#integrantes').text(currentValue);
+  $('#integCtrl').val(currentValue);
   $('input[name="employees"]').val(currentValue);
 }
 

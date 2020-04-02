@@ -126,7 +126,11 @@
 								<div class="integrantes" style="cursor: auto;">
 	                                <div class="description text-center">
 	                                    <p><span id="to" style="color: #fff">138.34</span> U$D mensual por persona.</p>
-	                                    <h2><span id="integrantes">1</span><span> persona/s</span></h2>
+	                                    <h2>
+	                                    	<span id="integrantes" style="display: none;">1</span>
+											<input type="number" min="1", max="2000", name="integCtrl" class="form-ctrl no-border" id="integCtrl" placeholder="1">	
+	                                    	<span> persona/s</span>
+	                                    </h2>
 	                                </div>
 	                                <div class="price">
 	                                    <div class="total" style="" id="precio-total">
@@ -163,26 +167,6 @@
 		</p>
 	</footer> 
 	{% endblock footer%}
-
-	<script>
-		/*
-		var href = $("#showPrice").attr('href-original');
-		$("input[type=range]").change(function(){
-			if ($(this).val() == $(this).attr("max")) {
-				$(".price .total").hide();
-				$(".price .contact-us").fadeIn(300);
-				$("#showPrice").removeAttr('href');
-				$("#showPrice").attr('disabled','true');
-			}else{
-				$(".price .total").show();
-				$(".price .contact-us").hide();
-				$("#showPrice").attr('href',href);
-				$("#showPrice").removeAttr('disabled');
-			}
-		})
-		*/
-	</script>
-	</script>
 
 	<!-- Mask -->
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
