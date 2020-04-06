@@ -57,14 +57,14 @@ $(inputText).keypress(function(e){
   if (code == 13){
     var cv = parseInt($(inputText).val());
     var max = parseInt($('input[type=range]').attr('max'));
-    console.log(cv);
-    console.log(max);
+    // console.log(cv);
+    // console.log(max);
 
     if (cv >= max) {
       contactus();
     } else {
       showPrice();
-      
+
       let inputMax = 100 / inputRange.attr('max');
       let trackerTooltipMove = (cv * inputMax);
       $('.html-inupt-range .tooltip').css('left', trackerTooltipMove + '%');
@@ -76,22 +76,6 @@ $(inputText).keypress(function(e){
     }
   }
 });
-
-// $(inputText).on('input change', inputText, function(e){
-  
-//   var cv = $(this).val();
-//   var max = $('input[type=range]').attr('max');
-//   console.log(cv);
-//   console.log(max);
-
-//   if (cv >= max) {
-//     contactus();
-//   } else {
-//     showPrice();
-//     const price = get_precios(cv);
-//   }
-  
-// });
 
 $(inputRange).on("mouseup touchend", inputRange, function (e) {
   //actualizo el precio por persona y el total únicamente si suelto el mouse
