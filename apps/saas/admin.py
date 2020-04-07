@@ -12,11 +12,28 @@ class OfertaAdmin(admin.ModelAdmin):
 	list_filter =  ('tipo_venta', 'plan', 'hardware')
 
 
+@admin.register(TipoVenta)
+class TipoVentaAdmin(admin.ModelAdmin):
+	list_display = ('nombre', 'directa')
+	list_filter = ('directa', )
+
+@admin.register(Descuento)
+class DescuentoAdmin(admin.ModelAdmin):
+	list_display = ('tipo_venta', 'porcentaje')
+	list_filter = ('tipo_venta', )
+
+@admin.register(EscalaPrecio)
+class EscalaPrecioAdmin(admin.ModelAdmin):
+	list_display = ('plan', 'display_tdv', 'hardware', 'alcance', 'precio_base',
+		 'tp_unidad', '__str__',
+	)
+	list_filter = ('plan', 'hardware', 'tipos_de_venta')
+
+
 admin.site.register(Plan)
-admin.site.register(TipoVenta)
 admin.site.register(Hardware)
-admin.site.register(EscalaPrecio)
-admin.site.register(Descuento)
+#admin.site.register(EscalaPrecio)
+#admin.site.register(Descuento)
 #admin.site.register(ModuloSaaS)
 
 # @admin.register(EscalaTransferPrice)

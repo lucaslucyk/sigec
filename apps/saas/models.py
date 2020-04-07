@@ -68,6 +68,12 @@ class EscalaPrecio(models.Model):
         verbose_name = "Escala de Precio"
         verbose_name_plural = "Escalas de Precios"
 
+    #@property
+    def display_tdv(self):
+        return ', '.join([str(tdv.nombre) for tdv in self.tipos_de_venta.all()])
+
+    display_tdv.short_description = "Tipos de venta"
+
     def __str__(self):
         return f'f(x) = {self.tp_unidad}x + {self.precio_base}'
 
