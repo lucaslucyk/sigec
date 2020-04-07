@@ -164,6 +164,7 @@ MANTENIMIENTO_ANUAL = 1.18
 IMPLEMENTACION = 0.25
 COMISION_VENTAS = 0.05
 
+PORCENTAJE_COSTO = 20  #porcentual value
 
 FINANCING = (
     ('36', '36 meses'),
@@ -173,6 +174,7 @@ HARDWARE = (
     ('p', 'SPEC'),
     ('t', 'Terceros'),
 )
+
 SELLER = (
     ('0', 'End User'),
     ('1', 'Partner'),

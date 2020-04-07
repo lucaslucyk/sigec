@@ -11,6 +11,21 @@ from apps.cotizaciones.models import LineaOferta, Producto, Grupo, Condiciones_C
 from decimal import Decimal
 #import openpyxl
 
+def porcentual(valor, porcentaje, incremento=False, decremento=False):
+	""" returns the porcuentual of a value """
+
+	if incremento and decremento:
+		raise ValueError("No se puede incrementar y decrementar a la vez.")
+
+	_multiplo = porcentaje / 100
+	if incremento:
+		_multiplo += 1
+
+	if decremento:
+		_multiplo = 1 - _multiplo
+
+	return round(float(valor) * float(_multiplo), 2)
+
 def convert_price(valor, tasa_cambio):
 	return round(Decimal(valor) * Decimal(tasa_cambio), 3)
 

@@ -1,14 +1,13 @@
 {% load staticfiles %}
+{% load crispy_forms_tags %}
 
 <!DOCTYPE html>
 <html lang="es">
 <head>
 	<meta charset="UTF-8">
-	
 
 	<link rel='stylesheet' href='{% static "css/style.css" %}' />
 	<link rel='stylesheet' href='{% static "css/html-input-range.css" %}' />
-
 
 	<!-- <link rel="stylesheet" href="statics/bulma.css"> -->
 	<!-- <link rel="stylesheet" href="statics/bulma-extensions.css"> -->
@@ -24,11 +23,6 @@
 	{% endblock head_extra %}
 </head>
 <body> {% block content %}
-	 <div class="topnav">
-	  <img src="https://specsa-my.sharepoint.com/personal/llucyk_grupospec_com/Documents/public/logo_spec.png" alt="logo">
-	  <p lang="en">Grupo SPEC | SaaS offer generator</p>
-	</div> 
-
     <section id="precio" class="section price spiable">
 	    <div class="resp-bg is-flex-mobile"></div>
 	    <div class="container">
@@ -42,37 +36,31 @@
 	                    <div class="slick-list"><div class="slick-track" style="opacity: 1; width: 5550px; transform: translate3d(0px, 0px, 0px);"><div class="step progress first slick-slide slick-current slick-active" data-slick-index="0" aria-hidden="false" style="width: 1110px;" tabindex="0">
 	                        <div class="padding">
 	                            <div class="detail">
-	                                <h2 lang="en">
-	                                	Enter the corresponding data
-	                                	<!--<br class="is-flex-desktop">a la oferta que desea-->
-	                                </h2>
+	                                <h2>Ingrese los datos correpondientes <br class="is-flex-desktop">a la oferta que desea</h2>
 	                            </div>
 
 	                            <div class="integrantes tipo-venta">
 	                                <div id="tv-end-user" 
 	                                	class="click-change-view description text-center data-send" 
-	                                	data-change="tv-partner hw-terceros"
-	                                	data-activate="hw-propio"
-										data-disable="hw-terceros"
-	                                	tv-value="End%20User"
+	                                	data-change="tv-partner tv-mayorista"
+	                                	tv-value="0"
 	                                	>
 	                                    <div class="total" style="">
-	                                        <p lang="en">Sell type:</p>
-	                                        <h2 lang="en">End User</h2>
+	                                        <p>Tipo de venta:</p>
+	                                        <h2>End User</h2>
 	                                    </div>
 	                                </div>
 
 	                                <div id="tv-partner" 
 	                                	class="click-change-view price" 
-	                                	data-change="tv-end-user"
-	                                	data-eneable="hw-terceros"
-	                                	tv-value="Partner">
+	                                	data-change="tv-mayorista tv-end-user"
+	                                	tv-value="1">
 	                                    <div class="total" style="">
-	                                        <p lang="en">Sell type:</p>
-	                                        <h2 lang="en">Partner</h2>
+	                                        <p>Tipo de venta:</p>
+	                                        <h2>Partner</h2>
 	                                    </div>
 	                                </div>
-									<!--
+
 	                                <div id="tv-mayorista" 
 	                                	class="click-change-view price" 
 	                                	data-change="tv-end-user tv-partner"
@@ -82,7 +70,6 @@
 	                                        <h2>Mayorista</h2>
 	                                    </div>
 	                                </div>
-	                            	-->
 	                            </div>
 								
 								<div class="integrantes plan">
@@ -91,8 +78,8 @@
 	                                	data-change="plan-48"
 	                                	plan-value="36">
 	                                    <div class="total" style="">
-	                                        <p lang="en">Financing:</p>
-	                                        <h2 lang="en">36 months</h2>
+	                                        <p>Plan:</p>
+	                                        <h2>36 meses</h2>
 	                                    </div>
 	                                </div>
 
@@ -101,8 +88,8 @@
 	                                	data-change="plan-36"
 	                                	plan-value="48">
 	                                    <div class="total" style="">
-	                                        <p lang="en">Financing:</p>
-	                                        <h2 lang="en">48 months</h2>
+	                                        <p>Plan:</p>
+	                                        <h2>48 meses</h2>
 	                                    </div>
 	                                </div>
 	                            </div>
@@ -111,58 +98,49 @@
 	                                <div id="hw-propio" 
 	                                	class="click-change-view description text-center data-send" 
 	                                	data-change="hw-terceros" 
-	                                	hw-value="Propio">
+	                                	hw-value="p">
 	                                    <div class="total" style="">
-	                                        <p lang="en">Hardware:</p>
-	                                        <h2 lang="en">SPEC</h2>
+	                                        <p>Hardware:</p>
+	                                        <h2>SPEC</h2>
 	                                    </div>
 	                                </div>
 
 	                                <div id="hw-terceros" 
 	                                	class="click-change-view price" 
 	                                	data-change="hw-propio"
-	                                	hw-value="Terceros"
-	                                	disabled="disabled">
+	                                	hw-value="t">
 	                                    <div class="total" style="">
-	                                        <p lang="en">Hardware:</p>
-	                                        <h2 lang="en">Third party</h2>
+	                                        <p>Hardware:</p>
+	                                        <h2>Terceros</h2>
 	                                    </div>
 	                                </div>
 	                            </div>
 
 	                            <div class="amount">
-	                                <p lang="en">Specify the number of employees</p>
+	                                <p>Ingrese el número de personas/empleados</p>
 	                                <div class="html-inupt-range html-input-range-custom">
-	                                    <input type="range" id="html-input-range" value="50" step="5" min="50" max="2000" tabindex="50" autocomplete="off">
+	                                    <input type="range" id="html-input-range" value="0" step="5" min="0" max="2000" tabindex="0" autocomplete="off">
 	                                <div class="hir-tracker-bg"></div><div class="hir-tracker-thumb" style="width: 0.2%;"></div></div>
 	                            </div>
 
 								<div class="integrantes" style="cursor: auto;">
 	                                <div class="description text-center">
-	                                    <p>
-	                                    	<span id="to" style="color: #fff">3.50</span>
-	                                     	<span lang="en" style="color: #fff;"> U$D monthly per person</span>
-	                                     </p>
+	                                    <p><span id="to" style="color: #fff">138.34</span> U$D mensual por persona.</p>
 	                                    <h2>
 	                                    	<span id="integrantes" style="display: none;">1</span>
-											<input type="number" min="50", max="2000", name="integCtrl" class="form-ctrl no-border" id="integCtrl" placeholder="" value="50">	
-	                                    	<span lang="en"> employee/s</span>
+											<input type="number" min="1", max="2000", name="integCtrl" class="form-ctrl no-border" id="integCtrl" placeholder="1">	
+	                                    	<span> persona/s</span>
 	                                    </h2>
 	                                </div>
 	                                <div class="price">
 	                                    <div class="total" style="" id="precio-total">
 	                                        <p>Total</p>
-											
-	                                        <h2 data-currency="$ ">
-	                                        	<span id="total-price">175.00</span>
-	                                        	<span lang="en"> U$D per month</span>
-	                                    	</h2>
-											
+	                                        <h2 data-currency="$ " id="total-price">138.34 U$D / mes</h2>
 	                                    </div>
 
 	                                    <div class="contact-us" style="display: none;" id="precio-contacto">
-	                                        <p style="margin-bottom: 18px" lang="en">More than 2000 employees? No problem!</p>
-	                                        <a lang="en" id="contactus" href="https://grupospec.com/es/contacto" class="common-button blue" target="_blank" tabindex="0">Contact us</a>
+	                                        <p style="margin-bottom: 18px">¿Más de 2000 empleados? ¡No hay problema!</p>
+	                                        <a id="contactus" href="https://grupospec.com/es/contacto" class="common-button blue" target="_blank" tabindex="0">Contactanos</a>
 	                                    </div>
 	                                </div>
 	                            </div>
@@ -184,8 +162,8 @@
 
 	{% block footer %}
 	<footer>
-		<p>Developed by <strong>Lucas Lucyk</strong> | Grupo SPEC <span id="currentYear">2020</span> &reg; | Contact information: 
-			<a href="mailto:llucyk@grupospec.com"> llucyk@grupospec.com</a>.
+		<p>Developed by Lucas Lucyk | Grupo SPEC 2020 &reg; | Contact information: 
+			<a href="mailto:soporte.ar@grupospec.com"> soporte.ar@grupospec.com</a>.
 		</p>
 	</footer> 
 	{% endblock footer%}

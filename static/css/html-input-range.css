@@ -1,5 +1,11 @@
 /* html input range styling */
 
+/*cursor not eneable for disabled divs*/
+
+div[disabled="disabled"]{
+  cursor: not-allowed;
+}
+
 /* default */
 input[type='range'] {
   width: 100%;
