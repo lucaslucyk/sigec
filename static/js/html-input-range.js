@@ -150,6 +150,8 @@ async function get_precios(employees){
   // final url is 
   // <baseUrl>/get_precios/<str:tipo_venta>/<str:plan>/<str:hardware>/<str:modulos>/<int:empleados>/
 
+  //await console.log(url);
+
   const res = await fetch(url);
   const json = await res.json();
 
@@ -203,7 +205,7 @@ $(".click-change-view").click(function() {
     //add selected class
     $(this).removeClass('price').addClass('description text-center data-send');
 
-    const cv = get_precios(inputRange.val());
+    const cv = get_precios($("#integCtrl").val());
   }
 });
 
