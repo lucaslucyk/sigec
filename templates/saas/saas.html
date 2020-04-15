@@ -3,199 +3,200 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-	<meta charset="UTF-8">
-	
+  <meta charset="UTF-8">
+  
 
-	<link rel='stylesheet' href='{% static "css/style.css" %}' />
-	<link rel='stylesheet' href='{% static "css/input-range.css" %}' />
+  <link rel='stylesheet' href='{% static "css/style.css" %}' />
+  <link rel='stylesheet' href='{% static "css/input-range.css" %}' />
 
 
-	<!-- <link rel="stylesheet" href="statics/bulma.css"> -->
-	<!-- <link rel="stylesheet" href="statics/bulma-extensions.css"> -->
-	<title>{% block head_title %}Offer generator{% endblock head_title %}</title>
+  <!-- <link rel="stylesheet" href="statics/bulma.css"> -->
+  <!-- <link rel="stylesheet" href="statics/bulma-extensions.css"> -->
+  <title>{% block head_title %}Offer generator{% endblock head_title %}</title>
 
-	<!-- <link rel="stylesheet" href="statics/style-swiper.css"><link rel="stylesheet" href="statics/slick-theme.css"><link rel="stylesheet" href="statics/bulma-extensions.css"><link rel="stylesheet" href="statics/html-input-range.css"><link rel="stylesheet" type="text/css" href="statics/slick.css"><script async="" src="statics/js"></script><script src="statics/a"></script> -->
-	<style>
-		{% block style %}{% endblock style %}
-	</style>
+  <!-- <link rel="stylesheet" href="statics/style-swiper.css"><link rel="stylesheet" href="statics/slick-theme.css"><link rel="stylesheet" href="statics/bulma-extensions.css"><link rel="stylesheet" href="statics/html-input-range.css"><link rel="stylesheet" type="text/css" href="statics/slick.css"><script async="" src="statics/js"></script><script src="statics/a"></script> -->
+  <style>
+    {% block style %}{% endblock style %}
+  </style>
 
-	{% block head_extra %} 
-		{{ form.media }}
-	{% endblock head_extra %}
+  {% block head_extra %} 
+    {{ form.media }}
+  {% endblock head_extra %}
 </head>
 <body> {% block content %}
-	 <div class="topnav">
-	  <img src='{% static "img/logo_spec.png" %}' alt="logo_spec">
-	  <p lang="en">Grupo SPEC | SaaS offer generator</p>
-	</div> 
+   <div class="topnav">
+    <img src='{% static "img/logo_spec.png" %}' alt="logo_spec">
+    <p lang="en">Grupo SPEC | SaaS offer generator</p>
+  </div> 
 
     <section id="precio" class="section price spiable">
-	    <div class="resp-bg is-flex-mobile"></div>
-	    <div class="container">
-	        <div class="columns">
-	            <div class="column is-10 is-offset-1 info">
-	                <div class="progress-bar" style="width: 25%;">
-	                    <span class="bar"></span>
+      <div class="resp-bg is-flex-mobile"></div>
+      <div class="container">
+          <div class="columns">
+              <div class="column is-10 is-offset-1 info">
+                  <div class="progress-bar" style="width: 25%;">
+                      <span class="bar"></span>
 
-	                </div>
-	                <div class="steps-slick slick-initialized slick-slider">
-	                    <div class="slick-list"><div class="slick-track" style="opacity: 1; width: 5550px; transform: translate3d(0px, 0px, 0px);"><div class="step progress first slick-slide slick-current slick-active" data-slick-index="0" aria-hidden="false" style="width: 1110px;" tabindex="0">
-	                        <div class="padding">
-	                            <div class="detail">
-	                                <h2 lang="en">
-	                                	Enter the corresponding data
-	                                	<!--<br class="is-flex-desktop">a la oferta que desea-->
-	                                </h2>
-	                            </div>
+                  </div>
+                  <div class="steps-slick slick-initialized slick-slider">
+                      <div class="slick-list"><div class="slick-track" style="opacity: 1; width: 5550px; transform: translate3d(0px, 0px, 0px);"><div class="step progress first slick-slide slick-current slick-active" data-slick-index="0" aria-hidden="false" style="width: 1110px;" tabindex="0">
+                          <div class="padding">
+                            <div class="detail">
+                                <h2 lang="en">
+                                  Enter the corresponding data
+                                  <!--<br class="is-flex-desktop">a la oferta que desea-->
+                                </h2>
+                            </div>
 
-	                            <div class="integrantes tipo-venta">
-	                                <div id="tv-end-user" 
-	                                	class="click-change-view description text-center data-send" 
-	                                	data-change="tv-partner hw-terceros"
-	                                	data-activate="hw-propio"
-										data-disable="hw-terceros"
-	                                	tv-value="End%20User"
-	                                	>
-	                                    <div class="total" style="">
-	                                        <p lang="en">Sell type:</p>
-	                                        <h2 lang="en">End User</h2>
-	                                    </div>
-	                                </div>
+                            <div class="integrantes tipo-venta">
+                              <div id="tv-end-user" 
+                                class="click-change-view description text-center data-send" 
+                                data-change="tv-partner tv-europa"
+                                tv-value="Argentina"
+                                >
+                                  <div class="total" style="">
+                                      <p lang="en">Sell type:</p>
+                                      <h2 lang="en">Argentina</h2>
+                                  </div>
+                              </div>
 
-	                                <div id="tv-partner" 
-	                                	class="click-change-view price" 
-	                                	data-change="tv-end-user"
-	                                	data-eneable="hw-terceros"
-	                                	tv-value="Partner">
-	                                    <div class="total" style="">
-	                                        <p lang="en">Sell type:</p>
-	                                        <h2 lang="en">Partner</h2>
-	                                    </div>
-	                                </div>
-									<!--
-	                                <div id="tv-mayorista" 
-	                                	class="click-change-view price" 
-	                                	data-change="tv-end-user tv-partner"
-	                                	tv-value="2">
-	                                    <div class="total" style="">
-	                                        <p>Tipo de venta:</p>
-	                                        <h2>Mayorista</h2>
-	                                    </div>
-	                                </div>
-	                            	-->
-	                            </div>
-								
-								<div class="integrantes plan">
-	                                <div id="plan-36" 
-	                                	class="click-change-view description text-center data-send" 
-	                                	data-change="plan-48"
-	                                	plan-value="36">
-	                                    <div class="total" style="">
-	                                        <p lang="en">Financing:</p>
-	                                        <h2 lang="en">36 months</h2>
-	                                    </div>
-	                                </div>
+                              <div id="tv-partner" 
+                                class="click-change-view price" 
+                                data-change="tv-end-user tv-europa"
+                                tv-value="Partner">
+                                  <div class="total" style="">
+                                      <p lang="en">Sell type:</p>
+                                      <h2 lang="en">Partner</h2>
+                                  </div>
+                              </div>
 
-	                                <div id="plan-48" 
-	                                	class="click-change-view price" 
-	                                	data-change="plan-36"
-	                                	plan-value="48">
-	                                    <div class="total" style="">
-	                                        <p lang="en">Financing:</p>
-	                                        <h2 lang="en">48 months</h2>
-	                                    </div>
-	                                </div>
-	                            </div>
+                              <div id="tv-europa" 
+                                class="click-change-view price" 
+                                data-change="tv-end-user tv-partner"
+                                tv-value="España y Portugal">
+                                  <div class="total" style="">
+                                      <p lang="en">Sell type:</p>
+                                      <h2 lang="en">Spain &amp; Portugal</h2>
+                                  </div>
+                              </div>
+                            </div>
+                
+                            <div class="integrantes plan">
+                              <div id="plan-36" 
+                                class="click-change-view description text-center data-send" 
+                                data-change="plan-48"
+                                plan-value="36">
+                                  <div class="total" style="">
+                                      <p lang="en">Financing:</p>
+                                      <h2 lang="en">36 months</h2>
+                                  </div>
+                              </div>
 
-	                            <div class="integrantes hardware">
-	                                <div id="hw-propio" 
-	                                	class="click-change-view description text-center data-send" 
-	                                	data-change="hw-terceros" 
-	                                	hw-value="Propio">
-	                                    <div class="total" style="">
-	                                        <p lang="en">Hardware:</p>
-	                                        <h2 lang="en">SPEC</h2>
-	                                    </div>
-	                                </div>
+                              <div id="plan-48" 
+                                class="click-change-view price" 
+                                data-change="plan-36"
+                                plan-value="48">
+                                  <div class="total" style="">
+                                      <p lang="en">Financing:</p>
+                                      <h2 lang="en">48 months</h2>
+                                  </div>
+                              </div>
+                            </div>
+                            
+                            <!--
+                            <div class="integrantes hardware">
+                                <div id="hw-propio" 
+                                  class="click-change-view description text-center data-send" 
+                                  data-change="hw-terceros" 
+                                  hw-value="Propio">
+                                    <div class="total" style="">
+                                        <p lang="en">Hardware:</p>
+                                        <h2 lang="en">SPEC</h2>
+                                    </div>
+                                </div>
 
-	                                <div id="hw-terceros" 
-	                                	class="click-change-view price" 
-	                                	data-change="hw-propio"
-	                                	hw-value="Terceros"
-	                                	disabled="disabled">
-	                                    <div class="total" style="">
-	                                        <p lang="en">Hardware:</p>
-	                                        <h2 lang="en">Third party</h2>
-	                                    </div>
-	                                </div>
-	                            </div>
+                                <div id="hw-terceros" 
+                                  class="click-change-view price" 
+                                  data-change="hw-propio"
+                                  hw-value="Terceros"
+                                  disabled="disabled">
+                                    <div class="total" style="">
+                                        <p lang="en">Hardware:</p>
+                                        <h2 lang="en">Third party</h2>
+                                    </div>
+                                </div>
+                            </div>
+                            -->
 
-	                            <div class="amount">
-	                                <p lang="en">Specify the number of employees</p>
-	                                <div class="html-inupt-range html-input-range-custom">
-	                                    <input type="range" id="html-input-range" value="50" step="5" min="50" max="2000" tabindex="50" autocomplete="off">
-	                                <div class="hir-tracker-bg"></div><div class="hir-tracker-thumb" style="width: 0.2%;"></div></div>
-	                            </div>
+                              <div class="amount">
+                                  <p lang="en">Specify the number of employees</p>
+                                  <div class="html-inupt-range html-input-range-custom">
+                                      <input type="range" id="html-input-range" value="50" step="5" min="50" max="2000" tabindex="50" autocomplete="off">
+                                  <div class="hir-tracker-bg"></div><div class="hir-tracker-thumb" style="width: 0.2%;"></div></div>
+                              </div>
 
-								<div class="integrantes" style="cursor: auto;">
-	                                <div class="description text-center">
-	                                    <p>
-	                                    	<span id="to" style="color: #fff">3.50</span>
-	                                     	<span lang="en" style="color: #fff;"> U$D monthly per person</span>
-	                                     </p>
-	                                    <h2>
-	                                    	<span id="integrantes" style="display: none;">1</span>
-											<input type="number" min="50", max="2000", name="integCtrl" class="form-ctrl no-border" id="integCtrl" placeholder="" value="50">	
-	                                    	<span lang="en"> employee/s</span>
-	                                    </h2>
-	                                </div>
-	                                <div class="price">
-	                                    <div class="total" style="" id="precio-total">
-	                                        <p>Total</p>
-											
-	                                        <h2 data-currency="$ ">
-	                                        	<span id="total-price">175.00</span>
-	                                        	<span lang="en"> U$D per month</span>
-	                                    	</h2>
-											
-	                                    </div>
+                <div class="integrantes" style="cursor: auto;">
+                                  <div class="description text-center">
+                                      <p>
+                                        <span id="to" style="color: #fff">3.50</span>&nbsp;
+                                        <span lang="en" class="moneda" style="color: #fff;">U$D</span>
+                                        <span lang="en" style="color: #fff;"> monthly per person</span>
 
-	                                    <div class="contact-us" style="display: none;" id="precio-contacto">
-	                                        <p style="margin-bottom: 18px" lang="en">More than 2000 employees? No problem!</p>
-	                                        <a lang="en" id="contactus" href="https://grupospec.com/es/contacto" class="common-button blue" target="_blank" tabindex="0">Contact us</a>
-	                                    </div>
-	                                </div>
-	                            </div>
+                                       </p>
+                                      <h2>
+                                        <span id="integrantes" style="display: none;">1</span>
+                      <input type="number" min="50", max="2000", name="integCtrl" class="form-ctrl no-border" id="integCtrl" placeholder="" value="50"> 
+                                        <span lang="en"> employee/s</span>
+                                      </h2>
+                                  </div>
+                                  <div class="price">
+                                      <div class="total" style="" id="precio-total">
+                                          <p>Total</p>
+                      
+                                          <h2 data-currency="$ ">
+                                            <span id="total-price">175.00</span>&nbsp;
+                                            <span lang="en" class="moneda">U$D</span>
+                                            <span lang="en"> per month</span>
+                                        </h2>
+                      
+                                      </div>
 
-	                        </div>
-	                    </div>
-	                    
-	                </div>
+                                      <div class="contact-us" style="display: none;" id="precio-contacto">
+                                          <p style="margin-bottom: 18px" lang="en">More than 2000 employees? No problem!</p>
+                                          <a lang="en" id="contactus" href="https://grupospec.com/es/contacto" class="common-button blue" target="_blank" tabindex="0">Contact us</a>
+                                      </div>
+                                  </div>
+                              </div>
 
-	            </div>
-				
+                          </div>
+                      </div>
+                      
+                  </div>
 
-	
-	        </div>
-	    </div>
-	</section>
-	<br><br><br><br>
-	
+              </div>
+        
 
-	{% block footer %}
-	<footer>
-		<p>Developed by <strong>Lucas Lucyk</strong> | Grupo SPEC <span id="currentYear">2020</span> &reg; | Contact information: 
-			<a href="mailto:llucyk@grupospec.com"> llucyk@grupospec.com</a>.
-		</p>
-	</footer> 
-	{% endblock footer%}
+  
+          </div>
+      </div>
+  </section>
+  <br><br><br><br>
+  
 
-	<!-- Mask -->
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+  {% block footer %}
+  <footer>
+    <p>Developed by <strong>Lucas Lucyk</strong> | Grupo SPEC <span id="currentYear">2020</span> &reg; | Contact information: 
+      <a href="mailto:llucyk@grupospec.com"> llucyk@grupospec.com</a>.
+    </p>
+  </footer> 
+  {% endblock footer%}
 
-	<script src='{% static "js/main.js" %}'></script>
+  <!-- Mask -->
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+
+  <script src='{% static "js/main.js" %}'></script>
 {% block extra_js %}
-	
+  
 {% endblock extra_js %}
 
 {% endblock content %}

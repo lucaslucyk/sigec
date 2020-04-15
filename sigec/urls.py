@@ -23,7 +23,7 @@ urlpatterns = [
     re_path(r'^admin/dynamic_raw_id/', include('dynamic_raw_id.urls')),
     path('create_offer/', saasviews.offer_create, name="offer_create"),
     #new for hosting onlyy
-    path('get_offer/<str:tipo_venta>/<int:plan>/<str:hardware>/<int:empleados>/', saasviews.get_offer, name='get_offer'),
+    path('get_offer/<str:tipo_venta>/<int:plan>/<int:empleados>/', saasviews.get_offer, name='get_offer'),
     path('', admin.site.urls),
     
     #path('saas/', include('saas.urls')),

@@ -141,9 +141,9 @@ async function get_precios(employees){
       if (value.getAttribute("plan-value") !== null){
         url += value.getAttribute("plan-value") + "/";
       }
-      if (value.getAttribute("hw-value") !== null){
+      /*if (value.getAttribute("hw-value") !== null){
         url += value.getAttribute("hw-value") + "/";
-      }
+      }*/
     });
 
   url += employees +'/';
@@ -158,6 +158,7 @@ async function get_precios(employees){
   //console.log(json.form.vm_por_capita);
   $('#to').text(json.form.pv_capita.toFixed(2)); //valor por capita
   $('#total-price').text((json.form.pv_mensual).toFixed(2)); //valor total por mes
+  $('.moneda').text(json.form.moneda);
 }
 
 function updatePrice(currentValue) {

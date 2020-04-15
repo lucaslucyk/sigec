@@ -20,7 +20,7 @@ def offer_create(request):
 
     return render(request, "saas/saas.html", context)
     
-def get_offer(request, tipo_venta, plan, hardware, empleados, context=None):
+def get_offer(request, tipo_venta, plan, empleados, context=None):
     
     form = {
         "pv_mensual": float(0),
@@ -34,7 +34,6 @@ def get_offer(request, tipo_venta, plan, hardware, empleados, context=None):
     try:    #getting models
         _tipo_venta = get_object_or_404(TipoVenta, nombre=tipo_venta)
         _plan = get_object_or_404(Plan, meses=plan)
-        _hardware = get_object_or_404(Hardware, proveedor=hardware)
     
     except Http404:
         #could not get the models
@@ -44,7 +43,6 @@ def get_offer(request, tipo_venta, plan, hardware, empleados, context=None):
         offer = Oferta()
         offer.tipo_venta = _tipo_venta
         offer.plan = _plan
-        offer.hardware = _hardware
         offer.empleados = empleados
 
     except:
@@ -54,6 +52,7 @@ def get_offer(request, tipo_venta, plan, hardware, empleados, context=None):
     form = {
         "pv_mensual": float(offer.pv_mensual),
         "pv_capita": float(offer.pv_capita),
+        "moneda": str(offer.moneda),
     }
 
     context = {
