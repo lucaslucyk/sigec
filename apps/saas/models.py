@@ -58,14 +58,14 @@ class EscalaPrecio(models.Model):
     tipos_de_venta = models.ManyToManyField(TipoVenta, blank=True)
     # hardware = models.ForeignKey(Hardware, blank=True, null=True, on_delete=models.CASCADE)
 
+    minimo = models.PositiveIntegerField("Cantidad mínima", default=0, unique=False, help_text="Mínimo en tipo de venta y plan.")
+    alcance = models.PositiveIntegerField("Cantidad máxima", default=0, unique=False)
+
     precio_base = models.DecimalField("Precio base", default=0, max_digits=10, decimal_places=2, \
         validators=[MinValueValidator(Decimal('0.00'))], help_text='"b" en f(x) = mx + b')
     
-    minimo = models.PositiveIntegerField("Cantidad mínima", default=0, unique=False, help_text="Mínimo en tipo de venta y plan.")
-    alcance = models.PositiveIntegerField("Cantidad máxima", default=0, unique=False) 
-    
-    tp_unidad = models.DecimalField("TP Unidad", default=0, max_digits=10, decimal_places=2, \
-        validators=[MinValueValidator(Decimal('0.00'))], help_text='"m" en f(x) = mx + b')
+    tp_unidad = models.DecimalField("TP Unidad", default=0, max_digits=10, decimal_places=4, \
+        validators=[MinValueValidator(Decimal('0.0000'))], help_text='"m" en f(x) = mx + b')
 
     descuento_terceros = models.DecimalField(default=0, max_digits=10, decimal_places=2, \
         validators=[MinValueValidator(Decimal('0.00'))], help_text='Descuento sin el signo %. Ej. 135,5 (%)')
@@ -119,7 +119,7 @@ class Oferta(models.Model):
             #hardware=self.hardware,
             tipos_de_venta__in=[self.tipo_venta],
 
-            alcance__gte = self.empleados,
+            alcance__gt = self.empleados,
             minimo__lte = self.empleados,
         ).order_by('alcance')
 
