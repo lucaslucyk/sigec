@@ -141,9 +141,6 @@ async function get_precios(employees){
       if (value.getAttribute("plan-value") !== null){
         url += value.getAttribute("plan-value") + "/";
       }
-      /*if (value.getAttribute("hw-value") !== null){
-        url += value.getAttribute("hw-value") + "/";
-      }*/
     });
 
   url += employees +'/';

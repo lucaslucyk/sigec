@@ -71,6 +71,7 @@ class Cliente(models.Model):
 class Categoria(models.Model):
     
     nombre = models.CharField(max_length=50, unique=True, blank=False, null=False)
+    orden = models.PositiveIntegerField(default=0)
 
     class Meta:
         verbose_name = "Categoria"

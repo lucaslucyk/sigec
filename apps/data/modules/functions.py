@@ -439,7 +439,7 @@ def crea_excel_oferta(queryset):
 
 	################# ITEMS #################
 	
-	lineas = LineaOferta.objects.filter(oferta=obj.id).order_by('producto__categoria__nombre')
+	lineas = LineaOferta.objects.filter(oferta=obj.id).order_by('producto__categoria__orden', 'pk')
 	
 	if lineas:
 		row += 1
