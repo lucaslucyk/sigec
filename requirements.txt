@@ -3,3 +3,5 @@ XlsxWriter
 django-dynamic-raw-id
 Pillow
 django-crispy-forms
+mysqlclient
+wfastcgi

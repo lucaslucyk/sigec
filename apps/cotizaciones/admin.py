@@ -162,7 +162,7 @@ class OfertaAdmin(admin.ModelAdmin):
     def chart_data(self, qs_filter=None):
         #print("Fields order: ", self.list_display)
 
-        if not qs_filter :   #retorno todos los elementos por cualquier error de req
+        if not qs_filter:   #retorno todos los elementos por cualquier error de req
             return (
                 #Oferta.objects.annotate(date=Trunc("fecha", "month"))
                 Oferta.objects.annotate(date=TruncDay("fecha"))

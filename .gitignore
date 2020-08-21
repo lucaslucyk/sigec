@@ -19,3 +19,5 @@ apps/saas/migrations/*
 !apps/saas/migrations/__init__.py
 *.csv
 *.xlsx
+#custom configs
+sigec/mysettings.json

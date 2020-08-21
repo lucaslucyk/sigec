@@ -1,5 +1,14 @@
 import os
+import json
 #from datetime import datetime
+
+# try get custom settings
+
+try:
+    with open('mysettings.json', encoding='utf-8') as f:
+        USER_SETTINGS = json.load(f)
+except:
+    USER_SETTINGS = {}
 
 VERSION = "1.8.5"
 '''
@@ -19,9 +28,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'p3o3or6fsa-%!!go0=iae9=+c&zl3l@9(2p61$&5r*5e7fk&(1'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True if not os.environ.get("SIGECDB") else False
+DEBUG = USER_SETTINGS.get('DEBUG', True)
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = USER_SETTINGS.get('ALLOWED_HOSTS', ['*'])
 
 # Application definition
 
@@ -90,20 +99,12 @@ WSGI_APPLICATION = 'sigec.wsgi.application'
 
 #Si se encuentra la config en variables de sistema, se toma dicha configuracion. 
 #Caso contrario, se toma la por defecto
-#El formato de la config en variables de entorno es Key1=Val1;Key2=Val2
-
-if not os.environ.get("SIGECDB"):
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        }
+DATABASES = USER_SETTINGS.get('DATABASES') or {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
-else:
-    DATABASES = {
-        'default': dict(elem.split("=") for elem in os.environ.get("SIGECDB").split(";"))
-    }
-
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -127,8 +128,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
-LANGUAGE_CODE = 'es-ar'
-TIME_ZONE = 'America/Argentina/Buenos_Aires'
+LANGUAGE_CODE = USER_SETTINGS.get('LANGUAGE_CODE', 'es-ar')
+TIME_ZONE = USER_SETTINGS.get('TIME_ZONE', 'America/Argentina/Buenos_Aires')
 
 USE_I18N = True
 USE_L10N = True
@@ -139,17 +140,13 @@ USE_TZ = True
 
 
 STATIC_URL = '/static/'
-
+MEDIA_URL = '/media/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
     #'/var/www/static/',
 ]
-
-STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR),'statics_pub')
-
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR),'media_uploads')
+STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'statics_pub')
+MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'media_uploads')
 
 MONEDA_DEFAULT = 'U$D'
 FILE_CLIENTES = "{}\\import\\clientes.csv".format(BASE_DIR)
@@ -189,4 +186,3 @@ PRICING_MANAGEMENT = (
     ('pu', 'Variable por cantidad'),
     ('pm', 'Variable por cantidad Mensual'),
 )
-
