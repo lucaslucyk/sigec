@@ -30,6 +30,7 @@ from django.contrib import messages
 admin.site.site_header = "SIGeC - v{}".format(settings.VERSION)
 admin.site.site_title = "Sistema Integrado de Gestión de Cotizaciones"
 admin.site.index_title = "SIGeC | Creado por Lucas Lucyk"
+#admin.site.index_template = "admin/myindex.html"
 
 class ComercialAdmin(admin.ModelAdmin):
     list_display = ("nombre_apellido", "email")
