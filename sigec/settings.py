@@ -1,25 +1,22 @@
 import os
 import json
-#from datetime import datetime
-
-# try get custom settings
-
-try:
-    with open('mysettings.json', encoding='utf-8') as f:
-        USER_SETTINGS = json.load(f)
-except:
-    USER_SETTINGS = {}
-
-VERSION = "1.8.5"
-'''
-    VERSION:    1   - INICIAL
-    RELEASE:    8   - GRAPHS OFERTAS VARIABLES CON QS
-    FIX:        5   - FIX ORDER ON OFFERS
-'''
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# try get custom settings
+try:
+    with open(os.path.join(BASE_DIR, "sigec", "mysettings.json"), encoding='utf-8') as f:
+        USER_SETTINGS = json.load(f)
+except:
+    USER_SETTINGS = {}
+
+VERSION = "1.9.12"
+'''
+    VERSION:    1   - SIGEC FUNCTIONS
+    RELEASE:    9   - SAAS
+    FIX:        12   - OFFER GENERATOR LINK
+'''
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
