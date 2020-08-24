@@ -5,18 +5,6 @@ db.sqlite3
 #static/*
 import/*
 .DS_Store
-!apps/cotizaciones/migrations/
-!apps/data/migrations/
-!apps/reparaciones/migrations/
-!apps/saas/migrations/
-apps/cotizaciones/migrations/*
-apps/data/migrations/*
-apps/reparaciones/migrations/*
-apps/saas/migrations/*
-!apps/cotizaciones/migrations/__init__.py
-!apps/data/migrations/__init__.py
-!apps/reparaciones/migrations/__init__.py
-!apps/saas/migrations/__init__.py
 *.csv
 *.xlsx
 #custom configs

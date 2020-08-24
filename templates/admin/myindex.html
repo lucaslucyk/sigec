@@ -9,12 +9,12 @@
         <div class="app-{{ app.app_label }} module">
         <table>
         <caption>
-			{% if app.name == 'SAAS' %}  
-				<a href="{{ app.app_url }}"class="section" title="{% blocktrans with name=app.name %}Models in the {{ name }} application{% endblocktrans %}" style="width: 50%;display: inline-block;">{{ app.name }}</a>
-				<a href="/create_offer/" class="section" title="Modelos en la aplicación Saas" style="align-content: right;text-align: right;display: inline-block;width: 50%;">Generator</a>
-			{% else %}
-				<a href="{{ app.app_url }}"class="section" title="{% blocktrans with name=app.name %}Models in the {{ name }} application{% endblocktrans %}">{{ app.name }}</a>
-			{% endif %}
+        {% if app.app_label == 'saas' %}  
+            <a href="{{ app.app_url }}"class="section" title="{% blocktrans with name=app.name %}Models in the {{ name }} application{% endblocktrans %}" style="width: 50%;display: inline-block;">{{ app.name }}</a>
+            <a href="/create_offer/" class="section" title="SaaS Offer Generator" style="text-align: right;display: inline-block;width: 49%;">Generator</a>
+        {% else %}
+            <a href="{{ app.app_url }}"class="section" title="{% blocktrans with name=app.name %}Models in the {{ name }} application{% endblocktrans %}">{{ app.name }}</a>
+        {% endif %}
         </caption>
         {% for model in app.models %}
             <tr class="model-{{ model.object_name|lower }}">
