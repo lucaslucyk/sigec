@@ -1,3 +1,3 @@
 # sigec
 
-commit previo a las modificaciones de manejo de precios
+this project has been moved to [https://gitlab.com/spec-sa-ar/sigec](https://gitlab.com/spec-sa-ar/sigec).
